@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/ai/ai_config_providers.dart';
-import '../../../../core/ai/ai_provider.dart';
 import '../../../../core/ai/chat_message.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
