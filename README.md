@@ -1,213 +1,214 @@
-# إبراهيم — Ibrahim Islamic Lifestyle App
-
 <div align="center">
   <img src="assets/images/app_icon.png" alt="Ibrahim App Icon" width="120"/>
   <br><br>
-  <p><strong>A comprehensive Islamic lifestyle application built with Flutter.</strong></p>
-  <p>Prayer times · Quran · Azkar · AI Assistant · Mosque Map · Spiritual Journey · and more</p>
+  <h1>إبراهيم — Ibrahim Islamic App</h1>
+  <p><strong>تطبيق إسلامي شامل للمسلم العصري</strong></p>
+  <p><strong>A comprehensive Islamic lifestyle application built with Flutter</strong></p>
   <br>
+  <p>أوقات الصلاة · القرآن · الأذكار · المساعد الذكي · خريطة المساجد · رحلة روحية · والمزيد</p>
+  <p>Prayer times · Quran · Azkar · AI Assistant · Mosque Map · Spiritual Journey · and more</p>
 </div>
 
 ---
 
-## ✨ Features
+## ✨ المميزات — Features
 
-### 🕌 Worship Essentials
-| Feature | Description |
-|---------|-------------|
-| **Prayer Times** | Accurate prayer times calculation using the Adhan library with automatic location detection. Track prayer status (on time / late / missed / qada). Next prayer countdown. |
-| **Qibla Direction** | Real-time compass-based Qibla direction finder with GPS-based calculation. |
-| **Tasbeeh** | Digital counter with preset dhikr (SubhanAllah, Alhamdulillah, Allahu Akbar) and custom counts. |
-| **Azkar** | Morning and evening azkar (adhkar) with Arabic text, transliteration, and translation. |
+### 🕌 أساسيات العبادة — Worship Essentials
 
-### 📖 Quran
-| Feature | Description |
-|---------|-------------|
-| **Surah List** | Complete 114 surahs with revelation type, verse count, and search functionality. |
-| **Surah Reader** | Ayah-by-ayah reader with Arabic text, translation, audio playback, and bookmarking. |
-| **Mushaf Mode** | Page-based Quran viewing with page images, jump-to-page navigation, and tafsir sheets. |
-| **Audio Player** | Full surah audio playback with play/pause, seek bar, and per-ayah audio buttons. |
-| **Khatma Planner** | Plan and track Quran completion goals with daily page targets. |
+| English | العربية |
+|---------|---------|
+| **Prayer Times** — Accurate calculation using Adhan library with auto location detection. Track prayer status (on time / late / missed / qada). | **أوقات الصلاة** — حساب دقيق لأوقات الصلاة باستخدام مكتبة Adhan مع تحديد الموقع تلقائياً. تتبع حالة الصلاة (في الوقت / متأخر / فائت / قضاء). |
+| **Qibla Direction** — Real-time compass-based direction finder with GPS calculation. | **اتجاه القبلة** — بوصلة رقمية دقيقة للقبلة مع حساب الموقع عبر GPS. |
+| **Tasbeeh** — Digital counter with preset dhikr (SubhanAllah, Alhamdulillah, Allahu Akbar). | **التسبيح** — عداد إلكتروني للأذكار (سبحان الله، الحمد لله، الله أكبر) مع عداد مخصص. |
+| **Azkar** — Morning and evening adhkar with Arabic, transliteration, and translation. | **الأذكار** — أذكار الصباح والمساء مع النص العربي والترجمة. |
 
-### 🤖 AI Assistant
-| Feature | Description |
-|---------|-------------|
-| **Gemini Chat** | Ask Islamic questions powered by Google's Gemini AI. |
-| **Suggestions** | Quick prompt suggestions for common topics (prayer, fasting, zakat, etc.). |
-| **Typing Indicator** | Real-time AI response status. |
-| **API Key Config** | In-app Gemini API key configuration, persisted securely in local storage. |
+### 📖 القرآن الكريم — Quran
 
-### 📿 Dhikr & Du'a
-| Feature | Description |
-|---------|-------------|
-| **99 Names of Allah** | All 99 names with Arabic, transliteration, translation, and meaning. Grid view with detail modal. |
-| **Dua Engine** | Mood-based dua recommendations — select your feeling and get relevant supplications. |
-| **Sadaqah Tracker** | Log charity by type (money, food, clothing, smile, etc.) with totals and history. |
-| **Wird / Daily Routine** | 6 daily spiritual tasks with progress tracking and check-in streaks. |
+| English | العربية |
+|---------|---------|
+| **Surah List** — All 114 surahs with revelation type, verse count, and search. | **قائمة السور** — جميع سور القرآن الـ 114 مع نوع النزول وعدد الآيات وإمكانية البحث. |
+| **Surah Reader** — Ayah-by-ayah reader with Arabic, translation, audio, and bookmarks. | **مصحف القراءة** — قراءة آية بآية مع النص العربي والترجمة والصوت والعلامات المرجعية. |
+| **Mushaf Mode** — Page-based viewing with page images, jump-to-page, and tafsir sheets. | **وضع المصحف** — عرض على شكل صفحات مع صور الصفحات والتنقل السريع والتفسير. |
+| **Audio Player** — Full surah playback with controls and per-ayah audio. | **مشغل الصوت** — استماع كامل للسور مع عناصر التحكم وتشغيل كل آية على حدة. |
+| **Khatma Planner** — Plan Quran completion with daily page targets. | **مخطط الختمة** — خطط لختم القرآن مع أهداف يومية لعدد الصفحات. |
 
-### 🗺️ Community & Location
-| Feature | Description |
-|---------|-------------|
-| **Mosque Map** | Google Maps integration with dark theme, showing nearby mosques and Islamic centers. |
-| **Family Hub** | Family spiritual stats, group challenges, member level tracking. |
-| **Spiritual Journey** | 6-level progression system with requirements and rewards. |
+### 🤖 المساعد الذكي — AI Assistant
 
-### 📚 Knowledge
-| Feature | Description |
-|---------|-------------|
-| **Hadith Collection** | 40 Nawawi hadiths with Arabic and translation. |
-| **Hajj & Umrah Guide** | Step-by-step guide covering all 7 stages of pilgrimage. |
-| **Islamic Calendar** | Hijri calendar with Islamic events and holidays. |
-| **Zakat Calculator** | Calculate zakat on cash, gold, and silver with nisab threshold check. |
-| **Tafsir** | Verse-by-verse tafsir (explanation) fetched from alquran.cloud API. |
+| English | العربية |
+|---------|---------|
+| **Gemini Chat** — Ask Islamic questions powered by Google Gemini AI. | **محادثة ذكية** — اطرح أسئلتك الإسلامية على الذكاء الاصطناعي Gemini. |
+| **Suggestions** — Quick prompts for common topics. | **اقتراحات** — أسئلة مقترحة حول مواضيع إسلامية متنوعة. |
+| **API Key Config** — Set your Gemini key in-app, saved securely. | **إعداد المفتاح** — أدخل مفتاح API الخاص بك من داخل التطبيق. |
 
-### ⚙️ Personalization
-| Feature | Description |
-|---------|-------------|
-| **Onboarding** | 4-step welcome flow introducing key features, persisted in local storage. |
-| **Profile** | User stats, theme toggle (dark/light), bookmarks management, about dialog. |
-| **Prayer Notifications** | Automatic scheduling of prayer time notifications using flutter_local_notifications. |
-| **Bookmark Sync** | Sync Quran bookmarks across devices via Firebase Firestore. |
-| **Explore Screen** | Searchable content browser with filter chips (Quran, Azkar, Duas, Names, etc.). |
+### 📿 الأذكار والأدعية — Dhikr & Du'a
 
----
+| English | العربية |
+|---------|---------|
+| **99 Names of Allah** — All names with Arabic, transliteration, and meaning. | **أسماء الله الحسنى** — جميع الأسماء الـ 99 مع النص العربي والترجمة والمعنى. |
+| **Dua Engine** — Mood-based dua recommendations. | **محرك الأدعية** — أدعية مخصصة حسب حالتك المزاجية. |
+| **Sadaqah Tracker** — Log charity by type with totals. | **متتبع الصدقة** — سجل صدقاتك حسب النوع مع إجمالي التبرعات. |
+| **Wird / Daily Routine** — 6 daily tasks with progress tracking. | **الورد اليومي** — 6 مهام روحية يومية مع متابعة التقدم. |
 
-## 🖼️ Screenshots
+### 🗺️ المجتمع والموقع — Community & Location
 
-| Home | Prayer Times | Quran Reader | AI Chat |
-|------|-------------|--------------|---------|
-| *Home dashboard with prayer countdown, daily verse, quick actions* | *Prayer list with status toggles and next prayer banner* | *Ayah-by-ayah Quran reader with audio and bookmarks* | *Gemini AI assistant with Islamic Q&A* |
+| English | العربية |
+|---------|---------|
+| **Mosque Map** — Google Maps with dark theme showing nearby mosques. | **خريطة المساجد** — خرائط Google بوضع داكن لعرض المساجد القريبة. |
+| **Family Hub** — Family stats, challenges, and member levels. | **مركز العائلة** — إحصائيات عائلية وتحديات جماعية ومستويات الأعضاء. |
+| **Spiritual Journey** — 6-level progression system. | **الرحلة الروحية** — نظام تطور من 6 مستويات مع متطلبات ومكافآت. |
 
-| 99 Names | Azkar | Mosque Map | Profile |
-|----------|-------|------------|---------|
-| *Grid of Allah's 99 names with detail modal* | *Morning & evening adhkar with counters* | *Google Maps with dark theme mosque locator* | *Stats, theme, bookmarks, and settings* |
+### 📚 العلوم الإسلامية — Knowledge
+
+| English | العربية |
+|---------|---------|
+| **Hadith Collection** — 40 Nawawi hadiths with Arabic and translation. | **مجموعة الأحاديث** — 40 حديثاً نووياً مع النص العربي والترجمة. |
+| **Hajj & Umrah Guide** — Step-by-step guide for all pilgrimage stages. | **دليل الحج والعمرة** — دليل تفصيلي خطوة بخطوة لجميع مناسك الحج. |
+| **Islamic Calendar** — Hijri calendar with events and holidays. | **التقويم الهجري** — تقويم إسلامي مع الأحداث والمناسبات الدينية. |
+| **Zakat Calculator** — Calculate zakat on cash, gold, silver with nisab check. | **حاسبة الزكاة** — حساب زكاتك على النقد والذهب والفضة مع التحقق من النصاب. |
+| **Tafsir** — Verse-by-verse explanation from alquran.cloud API. | **التفسير** — تفسير الآيات مستورد من API alquran.cloud. |
+
+### ⚙️ التخصيص — Personalization
+
+| English | العربية |
+|---------|---------|
+| **Onboarding** — 4-step welcome flow, persisted in storage. | **شاشة الترحيب** — 4 خطوات تعريفية بالميزات الرئيسية. |
+| **Profile** — Stats, dark/light theme toggle, bookmarks, about. | **الملف الشخصي** — إحصائيات وتبديل السمة الداكنة/الفاتحة والعلامات المرجعية. |
+| **Prayer Notifications** — Automatic alerts for prayer times. | **إشعارات الصلاة** — تنبيهات تلقائية لأوقات الصلاة. |
+| **Bookmark Sync** — Cross-device sync via Firebase Firestore. | **مزامنة العلامات** — مزامنة العلامات المرجعية عبر الأجهزة باستخدام Firebase. |
+| **Explore** — Searchable content browser with filter chips. | **استكشف** — متصفح محتوى قابل للبحث مع مرشحات. |
 
 ---
 
-## 🛠️ Tech Stack
+## 🖼️ لقطات الشاشة — Screenshots
 
-| Technology | Purpose |
-|------------|---------|
-| **Flutter 3.x** | Cross-platform framework |
-| **Dart** | Programming language |
-| **flutter_riverpod** | State management with code generation (riverpod_annotation) |
-| **go_router** | Declarative routing with ShellRoute + bottom navigation |
-| **Dio** | HTTP client with retry interceptor and error handling |
-| **Hive** | Local storage for settings, bookmarks, progress, prayer data |
-| **Firebase** | Firestore for bookmark sync |
-| **just_audio** | Audio playback for Quran recitation |
-| **google_maps_flutter** | Mosque map with custom dark theme |
-| **flutter_compass** | Qibla direction compass |
-| **Adhan** | Accurate prayer time calculation |
-| **flutter_local_notifications** | Prayer notification scheduling |
-| **Gemini API** | AI-powered Islamic assistant |
-| **alquran.cloud API** | Quranic tafsir data |
+| الصفحة الرئيسية — Home | أوقات الصلاة — Prayer | القرآن — Quran | المساعد الذكي — AI Chat |
+|------------------------|-----------------------|----------------|--------------------------|
+| *اللوحة الرئيسية مع عد تنازلي للصلاة وآية اليوم* | *قائمة الصلوات مع حالة كل صلاة* | *قارئ القرآن آية بآية مع الصوت والعلامات* | *محادثة مع الذكاء الاصطناعي Gemini* |
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ التقنيات المستخدمة — Tech Stack
 
-### Prerequisites
+| التقنية — Technology | الاستخدام — Purpose |
+|----------------------|---------------------|
+| **Flutter 3.x** | إطار عمل التطبيق — Cross-platform framework |
+| **Dart** | لغة البرمجة — Programming language |
+| **flutter_riverpod** | إدارة الحالة — State management |
+| **go_router** | التنقل بين الشاشات — Declarative routing |
+| **Dio** | طلبات الشبكة — HTTP client |
+| **Hive** | التخزين المحلي — Local storage |
+| **Firebase** | مزامنة البيانات — Cloud sync |
+| **just_audio** | تشغيل الصوت — Audio playback |
+| **google_maps_flutter** | خرائط المساجد — Mosque map |
+| **flutter_compass** | بوصلة القبلة — Qibla compass |
+| **Adhan** | حساب أوقات الصلاة — Prayer time calculation |
+| **flutter_local_notifications** | إشعارات الصلاة — Prayer notifications |
+| **Gemini API** | المساعد الذكي — AI assistant |
+| **alquran.cloud API** | بيانات التفسير — Tafsir data |
+
+---
+
+## 🚀 البداية — Getting Started
+
+### المتطلبات — Prerequisites
 - Flutter SDK (>=3.0.0)
 - Dart SDK (>=3.0.0)
 - Android Studio / VS Code
-- An Android emulator or physical device
+- محاكي Android أو جهاز فعلي — Android emulator or physical device
 
-### Installation
+### التثبيت — Installation
 
 ```bash
-# Clone the repository
+# استنساخ المستودع — Clone the repository
 git clone https://github.com/osamasanad2/ibrahim_islamic_app.git
 cd ibrahim_islamic_app
 
-# Install dependencies
+# تثبيت الحزم — Install dependencies
 flutter pub get
 
-# Generate Riverpod code
+# إنشاء الكود — Generate Riverpod code
 flutter pub run build_runner build --delete-conflicting-outputs
 
-# Run the app
+# تشغيل التطبيق — Run the app
 flutter run
 ```
 
-### API Keys
+### مفاتيح API — API Keys
 
-The app requires the following API keys at runtime:
-- **Gemini API Key** — Configurable via in-app settings dialog, persisted in Hive
-- **Google Maps API Key** — Required in `android/app/src/main/AndroidManifest.xml` for mosque map functionality
+| المفتاح — Key | الشرح — Description |
+|---------------|---------------------|
+| **Gemini API Key** | يمكن إدخاله من داخل التطبيق — Configurable in-app |
+| **Google Maps API Key** | مطلوب في AndroidManifest.xml — Required in AndroidManifest.xml |
 
 ---
 
-## 📂 Project Structure
+## 📂 هيكل المشروع — Project Structure
 
 ```
 lib/
 ├── core/
-│   ├── constants/          # App colors, dimensions, strings, typography
-│   ├── di/                 # Dependency injection providers
-│   ├── network/            # API client with interceptors
-│   ├── router/             # GoRouter configuration (24 routes)
-│   ├── storage/            # Hive local storage wrapper
-│   ├── theme/              # Dark/light themes and provider
-│   ├── utils/              # Audio service, location, prayer calc, etc.
-│   └── widgets/            # Shared widgets (scaffold, bottom nav)
+│   ├── constants/          # الألوان والأبعاد والسلاسل والخطوط
+│   ├── di/                 # مزودات حقن التبعيات
+│   ├── network/            # عميل API مع المعترضات
+│   ├── router/             # إعدادات GoRouter (24 مساراً)
+│   ├── storage/            # غلاف تخزين Hive المحلي
+│   ├── theme/              # السمات الداكنة/الفاتحة
+│   ├── utils/              # خدمات الصوت والموقع وحساب الصلاة
+│   └── widgets/            # الويدجت المشتركة (الشريط السفلي)
 ├── features/
-│   ├── ai_assistant/       # Gemini chat screen
-│   ├── azkar/              # Azkar + Tasbeeh screens
-│   ├── calendar/           # Hijri calendar
-│   ├── dua/                # Mood-based dua engine
-│   ├── explore/            # Searchable content browser
-│   ├── family_hub/         # Family stats and challenges
-│   ├── hadith/             # 40 Nawawi collection
-│   ├── hajj/               # Hajj/Umrah guide
-│   ├── home/               # Dashboard with widgets
-│   ├── mosque_map/         # Google Maps mosque locator
-│   ├── names_of_allah/     # 99 Names display
-│   ├── onboarding/         # 4-step welcome flow
-│   ├── prayer_times/       # Prayer list + countdown
-│   ├── profile/            # User profile + settings
-│   ├── qibla/              # Compass direction
-│   ├── quran/              # Reader, mushaf, audio, khatma
-│   ├── sadaqah/            # Charity tracker
-│   ├── spiritual_journey/  # Progression system
-│   ├── wird/               # Daily spiritual routine
-│   └── zakat/              # Zakat calculator
-└── main.dart               # Entry point
+│   ├── ai_assistant/       # شاشة المحادثة الذكية
+│   ├── azkar/              # شاشات الأذكار والتسبيح
+│   ├── calendar/           # التقويم الهجري
+│   ├── dua/                # محرك الأدعية
+│   ├── explore/            # متصفح المحتوى
+│   ├── family_hub/         # مركز العائلة
+│   ├── hadith/             # مجموعة الأحاديث
+│   ├── hajj/               # دليل الحج والعمرة
+│   ├── home/               # اللوحة الرئيسية
+│   ├── mosque_map/         # خريطة المساجد
+│   ├── names_of_allah/     # أسماء الله الحسنى
+│   ├── onboarding/         # شاشة الترحيب
+│   ├── prayer_times/       # أوقات الصلاة
+│   ├── profile/            # الملف الشخصي
+│   ├── qibla/              # اتجاه القبلة
+│   ├── quran/              # القارئ والمصحف والصوت والختمة
+│   ├── sadaqah/            # متتبع الصدقة
+│   ├── spiritual_journey/  # الرحلة الروحية
+│   ├── wird/               # الورد اليومي
+│   └── zakat/              # حاسبة الزكاة
+└── main.dart               # نقطة الدخول
 ```
 
 ---
 
-## 🔧 Commands
+## 🔧 الأوامر — Commands
 
-| Command | Description |
-|---------|-------------|
-| `flutter run` | Run on connected device/emulator |
-| `flutter build apk --debug` | Build debug APK |
-| `flutter build apk --release` | Build release APK |
-| `flutter analyze` | Run static analysis (0 errors, 0 warnings) |
-| `flutter test` | Run tests |
-| `flutter pub run build_runner build` | Generate Riverpod code |
-| `flutter pub run build_runner watch` | Auto-generate on file changes |
-
----
-
-## 📊 Stats
-
-- **40+** screens and widgets
-- **24** GoRouter routes
-- **13,000+** lines of Dart code
-- **0** analyzer errors
-- **0** analyzer warnings
+| الأمر — Command | الشرح — Description |
+|-----------------|---------------------|
+| `flutter run` | تشغيل التطبيق — Run on device |
+| `flutter build apk --debug` | بناء APK للتصحيح — Build debug APK |
+| `flutter build apk --release` | بناء APK للإصدار — Build release APK |
+| `flutter analyze` | تحليل الكود (0 أخطاء) — Static analysis |
+| `flutter test` | تشغيل الاختبارات — Run tests |
+| `flutter pub run build_runner build` | إنشاء الكود — Generate code |
 
 ---
 
-## 📄 License
+## 📊 الإحصائيات — Stats
 
-This project is for personal and educational use.
+| البيان — Metric | القيمة — Value |
+|-----------------|----------------|
+| شاشات وويدجت — Screens & widgets | **40+** |
+| مسارات التوجيه — GoRouter routes | **24** |
+| سطور الكود — Lines of Dart code | **13,000+** |
+| أخطاء التحليل — Analyzer errors | **0** |
+| تحذيرات التحليل — Analyzer warnings | **0** |
 
 ---
 
-<div align="center">
+<div align="center" dir="rtl">
+  <p>صنع بحب للمجتمع الإسلامي</p>
   <p>Made with ❤️ for the Muslim community</p>
+  <br>
   <p>—— إبراهيم ——</p>
 </div>
