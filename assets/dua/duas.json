@@ -1,0 +1,124 @@
+{
+  "duas": [
+    {
+      "id": 1,
+      "arabic": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+      "translation": "Our Lord! Give us good in this world and good in the Hereafter, and save us from the punishment of the Fire.",
+      "reference": "البقرة: 201",
+      "category": "general",
+      "tags": ["gratitude", "praise", "general"]
+    },
+    {
+      "id": 2,
+      "arabic": "رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي",
+      "translation": "My Lord, expand for me my breast [with assurance] and ease for me my task.",
+      "reference": "طه: 25-28",
+      "category": "general",
+      "tags": ["anxiety", "stress", "worry"]
+    },
+    {
+      "id": 3,
+      "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ",
+      "translation": "O Allah, I seek refuge in You from anxiety and grief, and I seek refuge in You from incapacity and laziness.",
+      "reference": "البخاري",
+      "category": "anxiety",
+      "tags": ["anxiety", "worry", "stress", "sadness", "grief"]
+    },
+    {
+      "id": 4,
+      "arabic": "لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
+      "translation": "There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.",
+      "reference": "الأنبياء: 87",
+      "category": "repentance",
+      "tags": ["sadness", "grief", "loss", "anxiety"]
+    },
+    {
+      "id": 5,
+      "arabic": "اللَّهُمَّ اشْفِنِي شِفَاءً لَا يُغَادِرُ سَقَمًا",
+      "translation": "O Allah, cure me with a cure that leaves no illness behind.",
+      "reference": "ابن ماجه",
+      "category": "healing",
+      "tags": ["sick", "illness", "healing", "ruqyah"]
+    },
+    {
+      "id": 6,
+      "arabic": "اللَّهُمَّ أَذْهِبِ الْبَأْسَ، رَبَّ النَّاسِ، وَاشْفِ أَنْتَ الشَّافِي، لَا شِفَاءَ إِلَّا شِفَاؤُكَ، شِفَاءً لَا يُغَادِرُ سَقَمًا",
+      "translation": "O Allah, remove the hardship, O Lord of mankind, and heal, for You are the Healer. There is no healing except Your healing, a healing that leaves no disease behind.",
+      "reference": "البخاري ومسلم",
+      "category": "healing",
+      "tags": ["sick", "illness", "healing", "ruqyah"]
+    },
+    {
+      "id": 7,
+      "arabic": "الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ",
+      "translation": "All praise is for Allah, by whose blessing all good things are completed.",
+      "reference": "ابن ماجه",
+      "category": "gratitude",
+      "tags": ["gratitude", "shukr", "praise", "grateful", "happy"]
+    },
+    {
+      "id": 8,
+      "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ",
+      "translation": "O Allah, I ask You for pardon and well-being in this life and the next.",
+      "reference": "ابن ماجه",
+      "category": "general",
+      "tags": ["general", "gratitude", "hopeful"]
+    },
+    {
+      "id": 9,
+      "arabic": "حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ",
+      "translation": "Allah is sufficient for me. There is no deity but He. In Him I put my trust, and He is the Lord of the Majestic Throne.",
+      "reference": "التوبة: 129",
+      "category": "trust",
+      "tags": ["anxiety", "worry", "stress", "fearful", "hopeful"]
+    },
+    {
+      "id": 10,
+      "arabic": "اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا، وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ وَارْحَمْنِي، إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ",
+      "translation": "O Allah, I have greatly wronged myself and no one forgives sins but You. So, grant me forgiveness and have mercy on me.",
+      "reference": "البخاري ومسلم",
+      "category": "repentance",
+      "tags": ["sadness", "grief", "anxiety"]
+    },
+    {
+      "id": 11,
+      "arabic": "إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ، اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي وَأَخْلِفْ لِي خَيْرًا مِنْهَا",
+      "translation": "Indeed, to Allah we belong and to Him we shall return. O Allah, reward me in my affliction and replace it with something better.",
+      "reference": "مسلم",
+      "category": "loss",
+      "tags": ["sadness", "grief", "loss"]
+    },
+    {
+      "id": 12,
+      "arabic": "اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الْحَزَنَ إِذَا شِئْتَ سَهْلًا",
+      "translation": "O Allah, there is no ease except that which You make easy, and You make the difficult easy if You wish.",
+      "reference": "ابن حبان",
+      "category": "ease",
+      "tags": ["anxiety", "worry", "stress", "tired"]
+    },
+    {
+      "id": 13,
+      "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ",
+      "translation": "Glory is to Allah and praise is to Him. Glory is to Allah the Almighty.",
+      "reference": "البخاري ومسلم",
+      "category": "praise",
+      "tags": ["grateful", "happy", "praise", "gratitude"]
+    },
+    {
+      "id": 14,
+      "arabic": "أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+      "translation": "I seek refuge with Allah from the outcast Shaytan.",
+      "reference": "متواتر",
+      "category": "protection",
+      "tags": ["fearful", "anxiety", "ruqyah"]
+    },
+    {
+      "id": 15,
+      "arabic": "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِنْ لَدُنْكَ رَحْمَةً إِنَّكَ أَنْتَ الْوَهَّابُ",
+      "translation": "Our Lord, let not our hearts deviate after You have guided us and grant us from Yourself mercy. Indeed, You are the Bestower.",
+      "reference": "آل عمران: 8",
+      "category": "guidance",
+      "tags": ["hopeful", "general", "gratitude"]
+    }
+  ]
+}

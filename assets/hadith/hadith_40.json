@@ -1,0 +1,94 @@
+{
+  "hadiths": [
+    {
+      "id": 1,
+      "arabic": "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى",
+      "translation": "Actions are judged by intentions, and every person will be rewarded according to their intention.",
+      "narrator": "عمر بن الخطاب رضي الله عنه",
+      "source": "متفق عليه",
+      "number": 1,
+      "category": "intentions"
+    },
+    {
+      "id": 2,
+      "arabic": "الإِسْلاَمُ أَنْ تَشْهَدَ أَنْ لَا إِلَهَ إِلَّا اللهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللهِ، وَتُقِيمَ الصَّلَاةَ، وَتُؤْتِيَ الزَّكَاةَ، وَتَصُومَ رَمَضَانَ، وَتَحُجَّ الْبَيْتَ إِنِ اسْتَطَعْتَ إِلَيْهِ سَبِيلاً",
+      "translation": "Islam is to testify that there is no god but Allah and Muhammad is the messenger of Allah, to perform the prayers, to pay the zakat, to fast in Ramadan, and to make the pilgrimage to the House if you are able to do so.",
+      "narrator": "عمر بن الخطاب رضي الله عنه",
+      "source": "مسلم",
+      "number": 2,
+      "category": "pillars"
+    },
+    {
+      "id": 3,
+      "arabic": "بُنِيَ الإِسْلاَمُ عَلَى خَمْسٍ: شَهَادَةِ أَنْ لاَ إِلَهَ إِلاَّ اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ، وَإِقَامِ الصَّلاَةِ، وَإِيتَاءِ الزَّكَاةِ، وَحَجِّ الْبَيْتِ، وَصَوْمِ رَمَضَانَ",
+      "translation": "Islam is built upon five pillars: testifying that there is no god but Allah and that Muhammad is the Messenger of Allah, performing Prayer, paying the Zakat, making the Pilgrimage to the House, and fasting in Ramadan.",
+      "narrator": "عبد الله بن عمر رضي الله عنه",
+      "source": "متفق عليه",
+      "number": 3,
+      "category": "pillars"
+    },
+    {
+      "id": 4,
+      "arabic": "مَنْ كَانَ يُؤْمِنُ بِاللهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+      "translation": "Whoever believes in Allah and the Last Day should speak a good word or remain silent.",
+      "narrator": "أبو هريرة رضي الله عنه",
+      "source": "متفق عليه",
+      "number": 15,
+      "category": "speech"
+    },
+    {
+      "id": 5,
+      "arabic": "لَا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لِأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+      "translation": "None of you will have faith till he wishes for his (Muslim) brother what he likes for himself.",
+      "narrator": "أنس بن مالك رضي الله عنه",
+      "source": "متفق عليه",
+      "number": 13,
+      "category": "brotherhood"
+    },
+    {
+      "id": 6,
+      "arabic": "الْحَلَالُ بَيِّنٌ، وَالْحَرَامُ بَيِّنٌ، وَبَيْنَهُمَا مُشَبَّهَاتٌ لَا يَعْلَمُهَا كَثِيرٌ مِنَ النَّاسِ",
+      "translation": "The halal is clear and the haram is clear, and between them are matters that are doubtful which many people do not know.",
+      "narrator": "النعمان بن بشير رضي الله عنه",
+      "source": "متفق عليه",
+      "number": 6,
+      "category": "halal_haram"
+    },
+    {
+      "id": 7,
+      "arabic": "مِنْ حُسْنِ إِسْلَامِ الْمَرْءِ تَرْكُهُ مَا لَا يَعْنِيهِ",
+      "translation": "Part of the perfection of a person's Islam is his leaving alone that which does not concern him.",
+      "narrator": "أبو هريرة رضي الله عنه",
+      "source": "الترمذي وابن ماجه",
+      "number": 12,
+      "category": "character"
+    },
+    {
+      "id": 8,
+      "arabic": "اتَّقِ اللهَ حَيْثُمَا كُنْتَ، وَأَتْبِعِ السَّيِّئَةَ الْحَسَنَةَ تَمْحُهَا، وَخَالِقِ النَّاسَ بِخُلُقٍ حَسَنٍ",
+      "translation": "Be mindful of Allah wherever you are. Follow a bad deed with a good deed and it will wipe it out. And treat people with good character.",
+      "narrator": "أبو ذر وأبو هريرة رضي الله عنهما",
+      "source": "الترمذي",
+      "number": 18,
+      "category": "character"
+    },
+    {
+      "id": 9,
+      "arabic": "إِنَّ اللهَ كَتَبَ الإِحْسَانَ عَلَى كُلِّ شَيْءٍ",
+      "translation": "Verily, Allah has prescribed excellence in all things.",
+      "narrator": "شداد بن أوس رضي الله عنه",
+      "source": "مسلم",
+      "number": 17,
+      "category": "excellence"
+    },
+    {
+      "id": 10,
+      "arabic": "إِنَّ مِنْ أَكْمَلِ الْمُؤْمِنِينَ إِيمَانًا أَحْسَنُهُمْ خُلُقًا",
+      "translation": "The most complete of the believers in faith are those with the best character.",
+      "narrator": "أبو هريرة رضي الله عنه",
+      "source": "أبو داود والترمذي",
+      "number": 0,
+      "category": "character"
+    }
+  ]
+}

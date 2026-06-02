@@ -1,0 +1,98 @@
+name: ibrahim
+description: إبراهيم — مرافقك الروحي اليومي
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.16.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # Navigation
+  go_router: ^13.2.0
+
+  # Networking
+  dio: ^5.4.3
+  pretty_dio_logger: ^1.3.1
+
+  # Local Storage
+  hive_flutter: ^1.1.0
+  shared_preferences: ^2.2.3
+
+  # Location & Maps
+  geolocator: ^11.0.0
+  google_maps_flutter: ^2.5.3
+  flutter_compass: ^0.8.0
+
+  # Quran & Islamic Data
+  adhan: ^2.0.0+1
+  hijri: any
+
+  # Firebase
+  firebase_core: ^2.30.1
+  firebase_auth: ^4.19.6
+  cloud_firestore: ^4.17.4
+  firebase_messaging: ^14.9.4
+
+  # UI & UX
+  lottie: ^3.1.0                   # Animations
+  shimmer: ^3.0.0                  # Loading states
+  cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.10+1
+  percent_indicator: ^4.2.3
+  just_audio: ^0.9.40              # Quran audio
+
+  # Utils
+  intl: ^0.20.2
+  permission_handler: ^11.3.1
+  url_launcher: ^6.3.0
+  share_plus: ^9.0.0
+  package_info_plus: ^8.0.0
+  flutter_local_notifications: ^21.0.0
+  timezone: ^0.11.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  riverpod_generator: ^2.4.0
+  build_runner: ^2.4.9
+  flutter_lints: ^4.0.0
+  hive_generator: ^2.0.1
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/quran/
+    - assets/azkar/
+    - assets/dua/
+    - assets/hadith/
+    - assets/images/
+    - assets/names/
+
+  fonts:
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+          weight: 700
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  min_sdk_android: 21
