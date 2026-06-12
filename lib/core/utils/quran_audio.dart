@@ -1,9 +1,15 @@
 class QuranAudio {
-  static const String _baseUrl = 'https://server8.mp3quran.net/afs';
+  static const String _baseUrl = 'https://server8.mp3quran.net';
 
-  static String getSurahUrl(int surahNumber) {
+  static const Map<String, String> reciters = {
+    'العفاسي': 'afs',
+    'المنشاوي': 'msh',
+    'عبد الباسط': 'abd_basit',
+  };
+
+  static String getSurahUrl(int surahNumber, {String reciterKey = 'afs'}) {
     final num = surahNumber.toString().padLeft(3, '0');
-    return '$_baseUrl/$num.mp3';
+    return '$_baseUrl/$reciterKey/$num.mp3';
   }
 
   static String getAyahUrl(int surahNumber, int ayahNumber) {

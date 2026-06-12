@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/services/recent_activity_service.dart';
+import '../../../core/utils/audio_service.dart';
+import '../../../core/utils/quran_audio.dart';
 import '../../../data/quran/quran_providers.dart';
 import '../../../core/storage/local_storage.dart';
 
@@ -22,6 +26,8 @@ class _QuranMushafScreenState extends ConsumerState<QuranMushafScreen> {
   bool _isNightMode = false;
   int _bookmarkedPage = 0;
   int _sessionResumePage = 1;
+  List<Map<String, dynamic>>? _surahPages;
+  String _reciterKey = 'afs';
 
   @override
   void initState() {
@@ -33,6 +39,7 @@ class _QuranMushafScreenState extends ConsumerState<QuranMushafScreen> {
     _pageController = PageController(initialPage: _currentPage - 1);
     _isNightMode = _storage.getBool('mushaf_night_mode', defaultValue: false);
     _bookmarkedPage = _storage.getQuranBookmark();
+    _loadSurahPages();
   }
 
   @override
@@ -94,6 +101,41 @@ class _QuranMushafScreenState extends ConsumerState<QuranMushafScreen> {
       );
     }
   }
+
+  Future<void> _loadSurahPages() async {
+    final str = await rootBundle.loadString('assets/quran/surah_pages.json');
+    final data = json.decode(str) as List;
+    _surahPages = data.cast<Map<String, dynamic>>();
+  }
+
+  int _getSurahForPage(int page) {
+    if (_surahPages == null) return 1;
+    int surah = 1;
+    for (final entry in _surahPages!) {
+      final surahNum = entry['surah'] as int;
+      final surahPage = entry['page'] as int;
+      if (surahPage <= page) {
+        surah = surahNum;
+      } else {
+        break;
+      }
+    }
+    return surah;
+  }
+
+  Future<void> _togglePlaySurah() async {
+    final audio = ref.read(audioServiceProvider);
+    if (audio.state.playing) {
+      await audio.pause();
+    } else {
+      final surah = _getSurahForPage(_currentPage);
+      final url = QuranAudio.getSurahUrl(surah, reciterKey: _reciterKey);
+      await audio.play(url);
+    }
+  }
+
+  String _reciterName() =>
+      QuranAudio.reciters.entries.firstWhere((e) => e.value == _reciterKey).key;
 
   @override
   Widget build(BuildContext context) {
@@ -252,79 +294,170 @@ class _QuranMushafScreenState extends ConsumerState<QuranMushafScreen> {
 
   Widget _buildBottomBar() {
     final showResume = _currentPage != _sessionResumePage;
+    final surah = _getSurahForPage(_currentPage);
+    final audio = ref.watch(audioServiceProvider);
+    final isPlaying = audio.state.playing;
+
     return Positioned(
       bottom: 0, left: 0, right: 0,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.only(top: 8, bottom: 12),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)],
+            colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (_currentPage > 1)
-              GestureDetector(
-                onTap: _goToPreviousPage,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.navigate_before, color: Colors.white70, size: 20),
-                      Text('السابقة', style: TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 15, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ),
-              ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.white12,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text('$_currentPage / 604',
-                style: const TextStyle(color: Colors.white, fontFamily: 'Inter', fontSize: 14)),
-            ),
-            if (_currentPage < 604)
-              GestureDetector(
-                onTap: _goToNextPage,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: const Row(
-                    children: [
-                      Text('التالي', style: TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 15, fontWeight: FontWeight.bold)),
-                      Icon(Icons.navigate_next, color: Colors.white70, size: 20),
-                    ],
-                  ),
-                ),
-              ),
-            if (showResume)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: GestureDetector(
-                  onTap: () => _pageController.jumpToPage(_sessionResumePage - 1),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: _togglePlaySurah,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    width: 36, height: 36,
                     decoration: BoxDecoration(
-                      color: AppColors.gold.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.goldMuted),
+                      color: isPlaying ? AppColors.gold : Colors.white24,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isPlaying ? Icons.pause : Icons.play_arrow,
+                      color: isPlaying ? AppColors.navy : Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text('سورة $surah', style: const TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 14, fontWeight: FontWeight.bold)),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () => _showReciterPicker(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.white12,
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.history, color: AppColors.gold, size: 16),
-                        const SizedBox(width: 4),
-                        Text('عودة ($_sessionResumePage)', style: const TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 13)),
+                        const Icon(Icons.person, color: Colors.white70, size: 13),
+                        const SizedBox(width: 3),
+                        Text(_reciterName(), style: const TextStyle(color: Colors.white70, fontFamily: 'Amiri', fontSize: 11)),
                       ],
                     ),
                   ),
                 ),
-              ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_currentPage > 1)
+                  GestureDetector(
+                    onTap: _goToPreviousPage,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.navigate_before, color: Colors.white70, size: 18),
+                          Text('السابقة', style: TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 13, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white12,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text('$_currentPage / 604',
+                    style: const TextStyle(color: Colors.white, fontFamily: 'Inter', fontSize: 12)),
+                ),
+                if (_currentPage < 604)
+                  GestureDetector(
+                    onTap: _goToNextPage,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      child: const Row(
+                        children: [
+                          Text('التالي', style: TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 13, fontWeight: FontWeight.bold)),
+                          Icon(Icons.navigate_next, color: Colors.white70, size: 18),
+                        ],
+                      ),
+                    ),
+                  ),
+                if (showResume)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: GestureDetector(
+                      onTap: () => _pageController.jumpToPage(_sessionResumePage - 1),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.gold.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.goldMuted),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.history, color: AppColors.gold, size: 14),
+                            const SizedBox(width: 3),
+                            Text('عودة ($_sessionResumePage)', style: const TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 11)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showReciterPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(AppDimensions.lg),
+        decoration: const BoxDecoration(
+          color: AppColors.navy,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusXl)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white30, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            const Text('اختر القارئ', style: TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 20, fontWeight: FontWeight.bold)),
+            const Divider(color: AppColors.goldMuted, height: 32),
+            ...QuranAudio.reciters.entries.map((e) {
+              final selected = e.value == _reciterKey;
+              return ListTile(
+                leading: Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked, color: AppColors.gold),
+                title: Text(e.key, style: TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 18, fontWeight: selected ? FontWeight.bold : FontWeight.normal)),
+                trailing: selected ? const Icon(Icons.check, color: AppColors.gold) : null,
+                onTap: () {
+                  setState(() => _reciterKey = e.value);
+                  Navigator.pop(ctx);
+                  final audio = ref.read(audioServiceProvider);
+                  if (audio.state.playing) {
+                    final surah = _getSurahForPage(_currentPage);
+                    audio.play(QuranAudio.getSurahUrl(surah, reciterKey: _reciterKey));
+                  }
+                },
+              );
+            }),
           ],
         ),
       ),
