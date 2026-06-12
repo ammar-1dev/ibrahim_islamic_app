@@ -28,6 +28,7 @@ import '../../features/sadaqah/presentation/sadaqah_screen.dart';
 import '../../features/wird/presentation/wird_screen.dart';
 import '../../features/books/presentation/islamic_books_screen.dart';
 import '../../features/books/presentation/book_reader_screen.dart';
+import '../../features/companions/presentation/companions_screen.dart';
 import '../../features/quran/presentation/quran_search_screen.dart';
 import '../../features/quran/presentation/bookmarks_screen.dart';
 import '../../features/quran/presentation/surah_reader_screen.dart';
@@ -99,6 +100,7 @@ GoRouter appRouter(AppRouterRef ref) {
           return SurahReaderScreen(surah: readerSurah, initialAyah: extra?['ayah'] as int?);
         },
       ),
+      GoRoute(path: '/companions', builder: (context, state) => const CompanionsScreen()),
       GoRoute(path: '/global-search', builder: (context, state) => const GlobalSearchScreen()),
       GoRoute(path: '/onboarding', builder: (context, state) => const OnboardingScreen()),
     ],

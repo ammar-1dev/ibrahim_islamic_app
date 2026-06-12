@@ -1,8 +1,6 @@
 import 'package:adhan/adhan.dart';
 
 class PrayerScheduleModel {
-  final String nextPrayerName;
-  final Duration timeUntilNextPrayer;
   final DateTime fajr;
   final DateTime sunrise;
   final DateTime dhuhr;
@@ -11,8 +9,6 @@ class PrayerScheduleModel {
   final DateTime isha;
 
   const PrayerScheduleModel({
-    required this.nextPrayerName,
-    required this.timeUntilNextPrayer,
     required this.fajr,
     required this.sunrise,
     required this.dhuhr,
@@ -20,6 +16,26 @@ class PrayerScheduleModel {
     required this.maghrib,
     required this.isha,
   });
+
+  String get nextPrayerName {
+    final now = DateTime.now();
+    if (now.isBefore(fajr)) return 'الفجر';
+    if (now.isBefore(sunrise)) return 'الشروق';
+    if (now.isBefore(dhuhr)) return 'الظهر';
+    if (now.isBefore(asr)) return 'العصر';
+    if (now.isBefore(maghrib)) return 'المغرب';
+    if (now.isBefore(isha)) return 'العشاء';
+    return 'الفجر';
+  }
+
+  Duration get timeUntilNextPrayer {
+    final now = DateTime.now();
+    final prayers = [fajr, sunrise, dhuhr, asr, maghrib, isha];
+    for (final p in prayers) {
+      if (now.isBefore(p)) return p.difference(now);
+    }
+    return fajr.add(const Duration(days: 1)).difference(now);
+  }
 }
 
 class PrayerCalculator {
@@ -27,23 +43,16 @@ class PrayerCalculator {
     required double latitude,
     required double longitude,
     DateTime? date,
+    double fajrAngle = 18.0,
+    double ishaAngle = 17.0,
   }) {
     final coords = Coordinates(latitude, longitude);
-    
-    // Fallback to manual parameters if CalculationMethod enum is problematic
-    final params = CalculationParameters(fajrAngle: 18.0, ishaAngle: 17.0);
+    final params = CalculationParameters(fajrAngle: fajrAngle, ishaAngle: ishaAngle);
     params.madhab = Madhab.shafi;
-
     final dateComponents = DateComponents.from(date ?? DateTime.now());
     final prayerTimes = PrayerTimes(coords, dateComponents, params);
 
-    final next = prayerTimes.nextPrayer();
-    final nextName = _getPrayerName(next);
-    final nextTime = prayerTimes.timeForPrayer(next) ?? DateTime.now();
-
     return PrayerScheduleModel(
-      nextPrayerName: nextName,
-      timeUntilNextPrayer: nextTime.difference(DateTime.now()),
       fajr: prayerTimes.fajr,
       sunrise: prayerTimes.sunrise,
       dhuhr: prayerTimes.dhuhr,
@@ -53,7 +62,7 @@ class PrayerCalculator {
     );
   }
 
-  static String _getPrayerName(Prayer prayer) {
+  static String getPrayerName(Prayer prayer) {
     switch (prayer) {
       case Prayer.fajr: return 'الفجر';
       case Prayer.sunrise: return 'الشروق';

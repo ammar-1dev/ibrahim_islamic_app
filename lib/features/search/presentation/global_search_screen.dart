@@ -111,7 +111,7 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
           const Text('ابحث عن أي شيء...',
             style: TextStyle(color: AppColors.textOnDarkMuted, fontFamily: 'Amiri', fontSize: 16)),
           const SizedBox(height: 8),
-          const Text('القرآن — الحديث — الأدعية — الأذكار — الكتب — أسماء الله',
+          const Text('القرآن — الحديث — الأدعية — الأذكار — الكتب — أسماء الله — أعلام المسلمين',
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.textOnDarkMuted, fontFamily: 'Inter', fontSize: 12)),
         ],
@@ -168,6 +168,7 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
       'azkar': {'icon': Icons.self_improvement, 'label': 'الأذكار', 'color': AppColors.gold},
       'book': {'icon': Icons.library_books, 'label': 'الكتب', 'color': AppColors.goldMuted},
       'name': {'icon': Icons.star, 'label': 'أسماء الله الحسنى', 'color': AppColors.goldLight},
+      'figure': {'icon': Icons.people, 'label': 'أعلام المسلمين', 'color': const Color(0xFF3F51B5)},
     };
 
     final widgets = <Widget>[];
@@ -245,6 +246,8 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
         icon = Icons.library_books; color = AppColors.goldMuted; break;
       case 'name':
         icon = Icons.star; color = AppColors.goldLight; break;
+      case 'figure':
+        icon = Icons.people; color = const Color(0xFF3F51B5); break;
       default:
         icon = Icons.search; color = AppColors.textOnDarkMuted;
     }
@@ -263,6 +266,8 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> {
         route = '/book-reader/${data?['id'] ?? 1}'; extras = null; break;
       case 'name':
         route = '/names'; extras = null; break;
+      case 'figure':
+        route = '/companions'; extras = null; break;
       default:
         route = '/'; extras = null;
     }

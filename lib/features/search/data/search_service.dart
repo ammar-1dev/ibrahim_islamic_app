@@ -24,6 +24,7 @@ class SearchService {
   List<Map<String, dynamic>>? _eveningAzkar;
   List<Map<String, dynamic>>? _books;
   List<Map<String, dynamic>>? _names;
+  List<Map<String, dynamic>>? _figures;
 
   Future<void> _ensureHadith() async {
     if (_hadiths != null) return;
@@ -57,6 +58,13 @@ class SearchService {
     if (_names != null) return;
     final str = await rootBundle.loadString('assets/names/99_names.json');
     _names = (json.decode(str) as List).cast<Map<String, dynamic>>();
+  }
+
+  Future<void> _ensureFigures() async {
+    if (_figures != null) return;
+    final str = await rootBundle.loadString('assets/companions/notable_muslims.json');
+    final data = json.decode(str) as Map<String, dynamic>;
+    _figures = (data['figures'] as List).cast<Map<String, dynamic>>();
   }
 
   List<SearchResult> _filter(List<Map<String, dynamic>> items, String query, String type,
@@ -97,6 +105,7 @@ class SearchService {
     futures.add(_searchAzkar(q, maxPerType));
     futures.add(_searchBooks(q, maxPerType));
     futures.add(_searchNames(q, maxPerType));
+    futures.add(_searchFigures(q, maxPerType));
 
     final results = await Future.wait(futures);
     return results.expand((r) => r).toList();
@@ -136,5 +145,12 @@ class SearchService {
     return _filter(_names!, q, 'name',
         titleKey: 'arabic', subtitleKey: 'meaning_ar',
         extraFields: ['transliteration', 'meaning_en']);
+  }
+
+  Future<List<SearchResult>> _searchFigures(String q, int max) async {
+    await _ensureFigures();
+    return _filter(_figures!, q, 'figure',
+        titleKey: 'name', subtitleKey: 'title',
+        extraFields: ['knownFor', 'profile', 'category']);
   }
 }

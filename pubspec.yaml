@@ -86,8 +86,9 @@ flutter:
     - assets/books/
     - assets/mushaf/
     - assets/tafsir/
+    - assets/companions/
 
-  fonts:
+fonts:
     - family: Amiri
       fonts:
         - asset: assets/fonts/Amiri-Regular.ttf

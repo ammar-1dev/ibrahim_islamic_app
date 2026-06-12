@@ -20,6 +20,7 @@ class QuickActionsGrid extends StatelessWidget {
       _QuickAction(icon: Icons.bookmark, label: 'العلامات', route: '/bookmarks', color: Color(0xFF00BCD4)),
       _QuickAction(icon: Icons.library_books, label: 'المكتبة', route: '/books', color: Color(0xFFE91E63)),
       _QuickAction(icon: Icons.track_changes, label: 'الرحلة', route: '/journey', color: Color(0xFFFFC107)),
+      _QuickAction(icon: Icons.people, label: 'أعلام المسلمين', route: '/companions', color: Color(0xFF3F51B5)),
     ];
 
     return Column(

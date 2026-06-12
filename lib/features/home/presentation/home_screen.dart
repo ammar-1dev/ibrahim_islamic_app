@@ -9,7 +9,6 @@ import '../../../core/storage/local_storage.dart';
 import '../../../core/utils/daily_hadith.dart';
 import '../../../core/utils/daily_suggestion.dart';
 import '../../../core/utils/date_utils.dart';
-import '../../../core/utils/prayer_calculator.dart';
 import 'widgets/prayer_countdown_card.dart';
 import 'widgets/prayer_times_list.dart';
 import 'widgets/daily_verse_card.dart';
@@ -17,11 +16,6 @@ import 'widgets/progress_tracker_row.dart';
 import 'widgets/quick_actions_grid.dart';
 import 'widgets/continue_reading_card.dart';
 import 'widgets/recent_activity_section.dart';
-
-final prayerScheduleProvider = FutureProvider<PrayerScheduleModel>((ref) async {
-  final location = await ref.read(locationServiceProvider).getCurrentLocation();
-  return PrayerCalculator.calculate(latitude: location.latitude, longitude: location.longitude);
-});
 
 final dailyVerseProvider = FutureProvider<DailyVerse>((ref) async {
   return DailyVerseSelector.getDailyVerse();

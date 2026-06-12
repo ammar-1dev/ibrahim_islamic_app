@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/constants/app_dimensions.dart';
-import '../../../../../core/utils/prayer_calculator.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/utils/prayer_calculator.dart';
 
 class PrayerCountdownCard extends StatefulWidget {
   final PrayerScheduleModel schedule;
@@ -20,13 +20,13 @@ class _PrayerCountdownCardState extends State<PrayerCountdownCard> {
   @override
   void initState() {
     super.initState();
-    _updateRemaining();
+    _update();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) _updateRemaining();
+      if (mounted) _update();
     });
   }
 
-  void _updateRemaining() {
+  void _update() {
     setState(() {
       _remaining = widget.schedule.timeUntilNextPrayer;
     });
