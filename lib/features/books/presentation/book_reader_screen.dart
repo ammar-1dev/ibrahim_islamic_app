@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../core/services/recent_activity_service.dart';
 import '../data/book_model.dart';
 
 class BookReaderScreen extends StatefulWidget {
@@ -34,6 +35,15 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
         _content = content;
         _loading = false;
       });
+      if (meta != null) {
+        recordActivity(
+          id: 'book-${widget.bookId}',
+          title: meta['title'] as String? ?? 'كتاب',
+          subtitle: meta['author'] as String? ?? '',
+          route: '/book-reader/${widget.bookId}',
+          icon: '📚',
+        );
+      }
     }
   }
 

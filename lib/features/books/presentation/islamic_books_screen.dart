@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../core/services/recent_activity_service.dart';
 
 class IslamicBooksScreen extends StatefulWidget {
   const IslamicBooksScreen({super.key});
@@ -168,6 +169,13 @@ class _IslamicBooksScreenState extends State<IslamicBooksScreen> {
                   return _BookCard(
                     book: book,
                       onTap: () {
+                      recordActivity(
+                        id: 'book-${book['id']}',
+                        title: book['title'] as String? ?? 'كتاب',
+                        subtitle: book['author'] as String? ?? '',
+                        route: extRoute ?? '/book-reader/${book['id']}',
+                        icon: '📚',
+                      );
                       if (extRoute != null) {
                         context.go(extRoute);
                       } else {
