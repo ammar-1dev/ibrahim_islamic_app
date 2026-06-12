@@ -22,6 +22,7 @@ import '../../features/quran/presentation/quran_mushaf_screen.dart';
 import '../../features/quran/presentation/surah_audio_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
+import '../../features/recording/presentation/recording_screen.dart';
 import '../../features/notification_settings/presentation/notification_settings_screen.dart';
 import '../../features/search/presentation/global_search_screen.dart';
 import '../../features/mosque_map/presentation/mosque_map_screen.dart';
@@ -105,6 +106,7 @@ GoRouter appRouter(AppRouterRef ref) {
       GoRoute(path: '/global-search', builder: (context, state) => const GlobalSearchScreen()),
       GoRoute(path: '/onboarding', builder: (context, state) => const OnboardingScreen()),
       GoRoute(path: '/notification-settings', builder: (context, state) => const NotificationSettingsScreen()),
+      GoRoute(path: '/recording', builder: (context, state) => const RecordingScreen()),
     ],
   );
 }

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/di/providers.dart';
@@ -8,6 +10,7 @@ import '../../../core/services/recent_activity_service.dart';
 import '../../../core/utils/cities_data.dart';
 import '../../../core/utils/prayer_calculator.dart';
 import '../../../core/storage/local_storage.dart';
+import '../../../core/utils/quran_audio.dart';
 
 final prayerStatusProvider = StateNotifierProvider<PrayerStatusNotifier, Map<String, bool>>((ref) {
   return PrayerStatusNotifier();
@@ -188,33 +191,108 @@ class PrayerTimesScreen extends ConsumerWidget {
   }
 }
 
-class _PrayerTimesBody extends ConsumerWidget {
+class _PrayerTimesBody extends ConsumerStatefulWidget {
   final PrayerScheduleModel schedule;
   const _PrayerTimesBody({required this.schedule});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PrayerTimesBody> createState() => _PrayerTimesBodyState();
+}
+
+class _PrayerTimesBodyState extends ConsumerState<_PrayerTimesBody> {
+  bool _permissionAsked = false;
+  bool _locationEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLocation();
+  }
+
+  Future<void> _checkLocation() async {
+    final status = await Geolocator.checkPermission();
+    if (mounted) {
+      setState(() => _locationEnabled = status == LocationPermission.always || status == LocationPermission.whileInUse);
+    }
+  }
+
+  Future<void> _requestLocation() async {
+    final service = ref.read(locationServiceProvider);
+    final result = await service.requestLocationPermission(context);
+    if (mounted) {
+      setState(() {
+        _permissionAsked = true;
+        _locationEnabled = result == 'granted';
+      });
+      if (result == 'granted') {
+        ref.invalidate(prayerScheduleProvider);
+      }
+    }
+  }
+
+  final _adhanPlayer = AudioPlayer();
+
+  Future<void> _playAdhan() async {
+    try {
+      await _adhanPlayer.setUrl(AdhanAudio.getAdhanUrl(makkah: true));
+      await _adhanPlayer.play();
+    } catch (_) {}
+  }
+
+  @override
+  void dispose() {
+    _adhanPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final statuses = ref.watch(prayerStatusProvider);
 
     final prayers = [
-      _PrayerEntry('الفجر', 'fajr', schedule.fajr, Icons.brightness_3),
-      _PrayerEntry('الشروق', 'sunrise', schedule.sunrise, Icons.wb_sunny),
-      _PrayerEntry('الظهر', 'dhuhr', schedule.dhuhr, Icons.wb_sunny_outlined),
-      _PrayerEntry('العصر', 'asr', schedule.asr, Icons.cloud),
-      _PrayerEntry('المغرب', 'maghrib', schedule.maghrib, Icons.wb_twilight),
-      _PrayerEntry('العشاء', 'isha', schedule.isha, Icons.nightlight_round),
+      _PrayerEntry('الفجر', 'fajr', widget.schedule.fajr, Icons.brightness_3),
+      _PrayerEntry('الشروق', 'sunrise', widget.schedule.sunrise, Icons.wb_sunny),
+      _PrayerEntry('الظهر', 'dhuhr', widget.schedule.dhuhr, Icons.wb_sunny_outlined),
+      _PrayerEntry('العصر', 'asr', widget.schedule.asr, Icons.cloud),
+      _PrayerEntry('المغرب', 'maghrib', widget.schedule.maghrib, Icons.wb_twilight),
+      _PrayerEntry('العشاء', 'isha', widget.schedule.isha, Icons.nightlight_round),
     ];
 
     return ListView(
       padding: const EdgeInsets.all(AppDimensions.lg),
       children: [
-        _NextPrayerBanner(schedule: schedule),
+        if (!_locationEnabled)
+          Container(
+            margin: const EdgeInsets.only(bottom: AppDimensions.md),
+            padding: const EdgeInsets.all(AppDimensions.md),
+            decoration: BoxDecoration(
+              color: AppColors.gold.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+              border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.location_on, color: AppColors.gold, size: 20),
+                const SizedBox(width: AppDimensions.sm),
+                const Expanded(
+                  child: Text('فعّل الموقع للتحديث التلقائي',
+                    style: TextStyle(color: AppColors.textOnDark, fontFamily: 'Amiri', fontSize: 14)),
+                ),
+                TextButton(
+                  onPressed: _requestLocation,
+                  child: const Text('تفعيل', style: TextStyle(color: AppColors.gold, fontFamily: 'Inter', fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
+          ),
+        _NextPrayerBanner(schedule: widget.schedule, onPlayAdhan: _playAdhan),
         const SizedBox(height: AppDimensions.lg),
         ...prayers.map((p) => _PrayerCard(
           entry: p,
-          isActive: schedule.nextPrayerName == p.name,
+          isActive: widget.schedule.nextPrayerName == p.name,
           isDone: statuses[p.key] ?? false,
           onTap: p.key != 'sunrise' ? () => ref.read(prayerStatusProvider.notifier).toggle(p.key) : null,
+          onAdhanTap: widget.schedule.nextPrayerName == p.name ? _playAdhan : null,
         )),
       ],
     );
@@ -231,7 +309,8 @@ class _PrayerEntry {
 
 class _NextPrayerBanner extends StatefulWidget {
   final PrayerScheduleModel schedule;
-  const _NextPrayerBanner({required this.schedule});
+  final VoidCallback? onPlayAdhan;
+  const _NextPrayerBanner({required this.schedule, this.onPlayAdhan});
 
   @override
   State<_NextPrayerBanner> createState() => _NextPrayerBannerState();
@@ -285,8 +364,33 @@ class _NextPrayerBannerState extends State<_NextPrayerBanner> {
       padding: const EdgeInsets.all(AppDimensions.xl),
       child: Column(
         children: [
-          const Text('الصلاة القادمة',
-            style: TextStyle(color: AppColors.textOnDarkMuted, fontFamily: 'Inter', fontSize: 12)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('الصلاة القادمة',
+                style: TextStyle(color: AppColors.textOnDarkMuted, fontFamily: 'Inter', fontSize: 12)),
+              const SizedBox(width: AppDimensions.md),
+              if (widget.onPlayAdhan != null)
+                GestureDetector(
+                  onTap: widget.onPlayAdhan,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.volume_up, color: AppColors.gold, size: 16),
+                        SizedBox(width: 4),
+                        Text('أذان', style: TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
           const SizedBox(height: AppDimensions.sm),
           Text(widget.schedule.nextPrayerName,
             style: const TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 36, fontWeight: FontWeight.w700)),
@@ -304,8 +408,9 @@ class _PrayerCard extends StatelessWidget {
   final bool isActive;
   final bool isDone;
   final VoidCallback? onTap;
+  final VoidCallback? onAdhanTap;
 
-  const _PrayerCard({required this.entry, required this.isActive, required this.isDone, this.onTap});
+  const _PrayerCard({required this.entry, required this.isActive, required this.isDone, this.onTap, this.onAdhanTap});
 
   @override
   Widget build(BuildContext context) {
@@ -362,6 +467,20 @@ class _PrayerCard extends StatelessWidget {
                 ),
                 child: const Text('الآن',
                   style: TextStyle(color: AppColors.navy, fontFamily: 'Inter', fontSize: 10, fontWeight: FontWeight.w700)),
+              ),
+            ],
+            if (onAdhanTap != null) ...[
+              const SizedBox(width: AppDimensions.sm),
+              GestureDetector(
+                onTap: onAdhanTap,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+                  ),
+                  child: const Icon(Icons.volume_up, color: AppColors.gold, size: 18),
+                ),
               ),
             ],
             if (isDone) ...[

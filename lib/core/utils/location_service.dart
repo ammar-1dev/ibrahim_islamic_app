@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'cities_data.dart';
@@ -33,25 +34,53 @@ class LocationService {
     if (selected != null) {
       return _position(selected.latitude, selected.longitude);
     }
+    return _getGpsPosition();
+  }
 
+  Future<String> requestLocationPermission(BuildContext context) async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (serviceEnabled) {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
+    if (!serviceEnabled) {
+      final result = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: const Color(0xFF1A2744),
+          title: const Text('تفعيل الموقع', style: TextStyle(color: Color(0xFFD4AF37), fontFamily: 'Amiri')),
+          content: const Text('يرجى تفعيل خدمة الموقع للحصول على مواقيت الصلاة بدقة', style: TextStyle(color: Colors.white70, fontFamily: 'Amiri')),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء', style: TextStyle(color: Colors.white54))),
+            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('تفعيل', style: TextStyle(color: Color(0xFFD4AF37)))),
+          ],
+        ),
+      );
+      if (result == true) {
+        await Geolocator.openLocationSettings();
+        return 'disabled';
       }
-      if (permission != LocationPermission.denied &&
-          permission != LocationPermission.deniedForever) {
-        try {
-          return await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.medium,
-            timeLimit: const Duration(seconds: 10),
-          );
-        } catch (_) {}
-      }
+      return 'denied';
     }
 
-    return _position(_defaultLat, _defaultLng);
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return 'denied';
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      return 'denied_forever';
+    }
+    return 'granted';
+  }
+
+  Future<Position> _getGpsPosition() async {
+    try {
+      return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.medium,
+        timeLimit: const Duration(seconds: 10),
+      );
+    } catch (_) {
+      return _position(_defaultLat, _defaultLng);
+    }
   }
 
   Position _position(double lat, double lng) => Position(
