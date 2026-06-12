@@ -182,7 +182,7 @@ class _QuranMushafScreenState extends ConsumerState<QuranMushafScreen> {
         padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top, bottom: 8),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
+            colors: [Colors.black.withValues(alpha: 0.85), Colors.black.withValues(alpha: 0.15), Colors.transparent],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -211,7 +211,7 @@ class _QuranMushafScreenState extends ConsumerState<QuranMushafScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+                const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -265,7 +265,7 @@ class _QuranMushafScreenState extends ConsumerState<QuranMushafScreen> {
                   child: const Row(
                     children: [
                       Icon(Icons.navigate_before, color: Colors.white70, size: 20),
-                      Text('السابقة', style: TextStyle(color: Colors.white70, fontFamily: 'Amiri', fontSize: 14)),
+                      Text('السابقة', style: TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 15, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -287,7 +287,7 @@ class _QuranMushafScreenState extends ConsumerState<QuranMushafScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: const Row(
                     children: [
-                      Text('التالي', style: TextStyle(color: Colors.white70, fontFamily: 'Amiri', fontSize: 14)),
+                      Text('التالي', style: TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 15, fontWeight: FontWeight.bold)),
                       Icon(Icons.navigate_next, color: Colors.white70, size: 20),
                     ],
                   ),
@@ -360,18 +360,18 @@ class _ActionChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+          color: Colors.black.withValues(alpha: 0.45),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 1.2),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: iconColor ?? Colors.white70, size: 16),
-            const SizedBox(width: 6),
-            Text(label, style: const TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 13)),
+            Icon(icon, color: iconColor ?? AppColors.gold, size: 20),
+            const SizedBox(width: 8),
+            Text(label, style: const TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
