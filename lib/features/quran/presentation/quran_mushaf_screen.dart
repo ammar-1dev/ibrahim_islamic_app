@@ -233,6 +233,15 @@ class _QuranMushafScreenState extends ConsumerState<QuranMushafScreen> {
                   iconColor: _bookmarkedPage == _currentPage ? AppColors.gold : Colors.white70,
                   onTap: _toggleBookmark,
                 ),
+                if (_bookmarkedPage > 0 && _bookmarkedPage != _currentPage) ...[
+                  const SizedBox(width: 8),
+                  _ActionChip(
+                    icon: Icons.double_arrow,
+                    label: 'انتقال',
+                    iconColor: AppColors.gold,
+                    onTap: () => _pageController.jumpToPage(_bookmarkedPage - 1),
+                  ),
+                ],
               ],
             ),
           ],
@@ -362,9 +371,9 @@ class _ActionChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.45),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 1.2),
+          color: AppColors.navyLight,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.goldMuted, width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
