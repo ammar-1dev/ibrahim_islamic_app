@@ -167,9 +167,9 @@ class _IslamicBooksScreenState extends State<IslamicBooksScreen> {
                   final extRoute = book['external_route'] as String?;
                   return _BookCard(
                     book: book,
-                    onTap: () {
+                      onTap: () {
                       if (extRoute != null) {
-                        context.push(extRoute);
+                        context.go(extRoute);
                       } else {
                         context.push('/book-reader/${book['id']}');
                       }
