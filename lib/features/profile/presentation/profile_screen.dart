@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/theme/theme_provider.dart';
@@ -107,6 +108,11 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildMenuSection(BuildContext context, WidgetRef ref, ThemeMode themeMode) {
     return Column(
       children: [
+        _buildMenuItem(
+          icon: Icons.notifications,
+          title: 'الإشعارات',
+          onTap: () => context.push('/notification-settings'),
+        ),
         _buildMenuItem(
           icon: Icons.dark_mode,
           title: 'المظهر',

@@ -112,6 +112,36 @@ class LocalStorage {
     return box.get(key, defaultValue: 0) as int;
   }
 
+  // ── Notification preferences ──────────────────────────────
+  static const String _prayerNotifKey = 'notif_prayer_enabled';
+  static const String _azkarMorningNotifKey = 'notif_azkar_morning_enabled';
+  static const String _azkarEveningNotifKey = 'notif_azkar_evening_enabled';
+  static const String _reminderNotifKey = 'notif_reminder_enabled';
+
+  bool isPrayerNotificationEnabled() =>
+      getBool(_prayerNotifKey, defaultValue: true);
+
+  Future<void> setPrayerNotificationEnabled(bool value) =>
+      saveBool(_prayerNotifKey, value);
+
+  bool isAzkarMorningNotificationEnabled() =>
+      getBool(_azkarMorningNotifKey, defaultValue: true);
+
+  Future<void> setAzkarMorningNotificationEnabled(bool value) =>
+      saveBool(_azkarMorningNotifKey, value);
+
+  bool isAzkarEveningNotificationEnabled() =>
+      getBool(_azkarEveningNotifKey, defaultValue: true);
+
+  Future<void> setAzkarEveningNotificationEnabled(bool value) =>
+      saveBool(_azkarEveningNotifKey, value);
+
+  bool isReminderNotificationEnabled() =>
+      getBool(_reminderNotifKey, defaultValue: true);
+
+  Future<void> setReminderNotificationEnabled(bool value) =>
+      saveBool(_reminderNotifKey, value);
+
   // ── Spiritual level ───────────────────────────────────────
   Future<void> saveSpiritualLevel(int level) async {
     final box = Hive.box(_progressBox);

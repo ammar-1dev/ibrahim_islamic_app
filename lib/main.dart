@@ -36,6 +36,7 @@ void main() async {
 
   if (Platform.isAndroid || Platform.isIOS) {
     await NotificationService().init();
+    NotificationService().scheduleAll();
   }
 
   runApp(
