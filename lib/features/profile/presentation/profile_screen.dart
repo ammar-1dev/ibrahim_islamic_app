@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/theme/theme_provider.dart';
@@ -33,6 +35,8 @@ class ProfileScreen extends ConsumerWidget {
             _buildStatsRow(quranPage, bookmarks.length, spiritualLevel),
             const SizedBox(height: AppDimensions.xl),
             _buildMenuSection(context, ref, themeMode),
+            const SizedBox(height: AppDimensions.xl),
+            _buildFooter(),
           ],
         ),
       ),
@@ -131,12 +135,18 @@ class ProfileScreen extends ConsumerWidget {
         _buildMenuItem(
           icon: Icons.share,
           title: 'مشاركة التطبيق',
-          onTap: () {},
+          onTap: () => _shareApp(),
         ),
         _buildMenuItem(
           icon: Icons.info_outline,
           title: 'عن التطبيق',
           onTap: () => _showAbout(context),
+        ),
+        _buildMenuItem(
+          icon: Icons.chat,
+          title: 'مراسلة المطور',
+          subtitle: 'واتساب',
+          onTap: () => _openWhatsApp(),
         ),
       ],
     );
@@ -163,6 +173,61 @@ class ProfileScreen extends ConsumerWidget {
         trailing: trailing ?? const Icon(Icons.arrow_forward_ios, color: AppColors.gold, size: 16),
         onTap: onTap,
       ),
+    );
+  }
+
+  Widget _buildFooter() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: AppDimensions.xl, horizontal: AppDimensions.lg),
+      decoration: BoxDecoration(
+        color: AppColors.navyLight,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
+        border: Border.all(color: AppColors.goldMuted),
+      ),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset('assets/images/app_icon.png', height: 48, width: 48),
+          ),
+          const SizedBox(height: AppDimensions.md),
+          const Text(
+            'تطبيق إبراهيم',
+            style: TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: AppDimensions.sm),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.gold.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+              border: Border.all(color: AppColors.goldMuted),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.favorite, color: AppColors.gold, size: 16),
+                SizedBox(width: 8),
+                Text(
+                  'لا تنسونا من صالح دعائكم',
+                  style: TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 8),
+                Icon(Icons.favorite, color: AppColors.gold, size: 16),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _shareApp() {
+    Share.share(
+      'تطبيق إبراهيم - رفيقك الروحي اليومي\n'
+      'كل ما تحتاجه لرحلة إيمانية متكاملة: قرآن، أذكار، أدعية، مواقيت الصلاة، وأكثر!\n'
+      'حمّله الآن',
     );
   }
 
@@ -208,22 +273,85 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _openWhatsApp() async {
+    const phone = '00967774561368';
+    final url = Uri.parse('https://wa.me/$phone');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
+
   void _showAbout(BuildContext context) {
-    showAboutDialog(
+    showDialog(
       context: context,
-      applicationName: 'إبراهيم',
-      applicationVersion: '1.0.0',
-      applicationIcon: Container(
-        width: 48, height: 48,
-        decoration: BoxDecoration(
-          color: AppColors.gold,
-          borderRadius: BorderRadius.circular(12),
+      builder: (context) => Dialog(
+        backgroundColor: AppColors.navyLight,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusXl)),
+        child: Padding(
+          padding: const EdgeInsets.all(AppDimensions.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60, height: 60,
+                decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(14)),
+                child: const Icon(Icons.mosque, color: AppColors.navy, size: 32),
+              ),
+              const SizedBox(height: AppDimensions.md),
+              const Text('إبراهيم', style: TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 26, fontWeight: FontWeight.bold)),
+              const Text('الإصدار 1.0.0', style: TextStyle(color: AppColors.textOnDarkMuted, fontFamily: 'Inter', fontSize: 12)),
+              const SizedBox(height: AppDimensions.md),
+              const Text('مرافقك الروحي اليومي', textAlign: TextAlign.center,
+                style: TextStyle(color: AppColors.textOnDark, fontFamily: 'Amiri', fontSize: 16)),
+              const SizedBox(height: AppDimensions.lg),
+              Container(
+                padding: const EdgeInsets.all(AppDimensions.md),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+                  border: Border.all(color: AppColors.goldMuted),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.favorite, color: AppColors.gold, size: 18),
+                    SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'لا تنسونا من صالح دعائكم',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 17, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Icon(Icons.favorite, color: AppColors.gold, size: 18),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppDimensions.lg),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () { Navigator.pop(context); _openWhatsApp(); },
+                  icon: const Icon(Icons.chat, size: 18),
+                  label: const Text('مراسلة المطور عبر واتساب', style: TextStyle(fontFamily: 'Amiri', fontSize: 14)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF25D366),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimensions.radiusMd)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppDimensions.sm),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('إغلاق', style: TextStyle(color: AppColors.textOnDarkMuted, fontFamily: 'Amiri')),
+              ),
+            ],
+          ),
         ),
-        child: const Icon(Icons.mosque, color: AppColors.navy, size: 28),
       ),
-      children: [
-        const Text('مرافقك الروحي اليومي', style: TextStyle(fontFamily: 'Amiri', fontSize: 16)),
-      ],
     );
   }
 }
