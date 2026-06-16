@@ -12,6 +12,7 @@ import '../../features/azkar/presentation/tasbeeh_screen.dart';
 import '../../features/adhkar/presentation/adhkar_screen.dart';
 import '../../features/dua/presentation/dua_screen.dart';
 import '../../features/hadith/presentation/hadith_screen.dart';
+import '../../features/hadith/presentation/hadith_collections_screen.dart';
 import '../../features/spiritual_journey/presentation/journey_screen.dart';
 import '../../features/family_hub/presentation/family_screen.dart';
 import '../../features/zakat/presentation/zakat_screen.dart';
@@ -82,7 +83,14 @@ GoRouter appRouter(AppRouterRef ref) {
       GoRoute(path: '/qibla', builder: (context, state) => const QiblaScreen()),
       GoRoute(path: '/tasbeeh', builder: (context, state) => const TasbeehScreen()),
       GoRoute(path: '/dua', builder: (context, state) => const DuaScreen()),
-      GoRoute(path: '/hadith', builder: (context, state) => const HadithScreen()),
+      GoRoute(path: '/hadith', builder: (context, state) => const HadithCollectionsScreen()),
+      GoRoute(
+        path: '/hadith/:id',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 1;
+          return HadithScreen(collectionId: id);
+        },
+      ),
       GoRoute(path: '/journey', builder: (context, state) => const SpiritualJourneyScreen()),
       GoRoute(path: '/khatma', builder: (context, state) => const KhatmaPlannerScreen()),
       GoRoute(path: '/zakat', builder: (context, state) => const ZakatScreen()),

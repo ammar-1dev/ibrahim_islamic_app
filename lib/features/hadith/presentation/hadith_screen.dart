@@ -1,111 +1,217 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/services/recent_activity_service.dart';
-
-class HadithModel {
-  final int id;
-  final int number;
-  final String category;
-  final String arabic;
-  final String fullArabic;
-  final String translation;
-  final String narrator;
-  final String source;
-
-  const HadithModel({
-    required this.id,
-    required this.number,
-    required this.category,
-    required this.arabic,
-    required this.fullArabic,
-    required this.translation,
-    required this.narrator,
-    required this.source,
-  });
-
-  factory HadithModel.fromJson(Map<String, dynamic> json) => HadithModel(
-        id: json['id'] as int,
-        number: json['number'] as int,
-        category: json['category'] as String? ?? '',
-        arabic: json['arabic'] as String,
-        fullArabic: json['full_arabic'] as String? ?? (json['arabic'] as String),
-        translation: json['translation'] as String,
-        narrator: json['narrator'] as String,
-        source: json['source'] as String,
-      );
-}
+import '../data/hadith_repository.dart';
 
 class HadithScreen extends StatefulWidget {
-  const HadithScreen({super.key});
+  final int collectionId;
+  const HadithScreen({super.key, this.collectionId = 1});
 
   @override
   State<HadithScreen> createState() => _HadithScreenState();
 }
 
 class _HadithScreenState extends State<HadithScreen> {
-  List<HadithModel> _hadiths = [];
+  final HadithRepository _repo = HadithRepository();
+  HadithCollection? _collection;
   bool _loading = true;
+  int? _expandedChapterId;
+  int? _expandedHadithId;
 
   @override
   void initState() {
     super.initState();
-    recordActivity(id: 'hadith', title: 'الأحاديث النبوية', subtitle: 'الأربعون النووية', route: '/hadith', icon: '📿');
+    recordActivity(
+      id: 'hadith_${widget.collectionId}',
+      title: 'الأحاديث النبوية',
+      subtitle: HadithRepository.getCollectionInfo(widget.collectionId)?.name ?? '',
+      route: '/hadith/${widget.collectionId}',
+      icon: '📿',
+    );
     _load();
   }
 
   Future<void> _load() async {
-    final str = await rootBundle.loadString('assets/hadith/hadith_40.json');
-    final data = json.decode(str) as Map<String, dynamic>;
+    final c = await _repo.load(widget.collectionId);
     setState(() {
-      _hadiths = (data['hadiths'] as List)
-          .map((e) => HadithModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+      _collection = c;
       _loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final info = HadithRepository.getCollectionInfo(widget.collectionId);
     return Scaffold(
       backgroundColor: AppColors.navy,
       appBar: AppBar(
-        title: const Text('الأربعون النووية'),
+        title: Text(info?.name ?? 'الأحاديث'),
         backgroundColor: AppColors.navy,
         elevation: 0,
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: AppColors.gold))
-          : ListView.builder(
-              padding: const EdgeInsets.all(AppDimensions.lg),
-              itemCount: _hadiths.length,
-              itemBuilder: (context, i) => _HadithCard(hadith: _hadiths[i]),
-            ),
+          : _collection!.chapters.isEmpty
+              ? _buildFlatList()
+              : _buildChaptersList(),
+    );
+  }
+
+  Widget _buildFlatList() {
+    final hadiths = _collection!.hadiths;
+    return ListView.builder(
+      padding: const EdgeInsets.all(AppDimensions.lg),
+      itemCount: hadiths.length,
+      itemBuilder: (context, i) => _HadithCard(
+        hadith: hadiths[i],
+        expanded: _expandedHadithId == hadiths[i].id,
+        onToggle: () {
+          setState(() {
+            _expandedHadithId =
+                _expandedHadithId == hadiths[i].id ? null : hadiths[i].id;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildChaptersList() {
+    final collection = _collection!;
+    return ListView.builder(
+      padding: const EdgeInsets.all(AppDimensions.lg),
+      itemCount: collection.chapters.length,
+      itemBuilder: (context, i) {
+        final chapter = collection.chapters[i];
+        final isExpanded = _expandedChapterId == chapter.id;
+        final chapterHadiths = collection.hadithsInChapter(chapter.id);
+        return Container(
+          margin: const EdgeInsets.only(bottom: AppDimensions.md),
+          decoration: BoxDecoration(
+            color: AppColors.navyLight,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+            border: Border.all(color: AppColors.goldMuted),
+          ),
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _expandedChapterId = isExpanded ? null : chapter.id;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(AppDimensions.lg),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.goldMuted.withValues(alpha: 0.3),
+                          borderRadius:
+                              BorderRadius.circular(AppDimensions.radiusFull),
+                        ),
+                        child: Text(
+                          '${chapterHadiths.length}',
+                          style: const TextStyle(
+                            color: AppColors.gold,
+                            fontFamily: 'Inter',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppDimensions.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              chapter.arabic,
+                              style: const TextStyle(
+                                color: AppColors.textOnDark,
+                                fontFamily: 'Amiri',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            if (chapter.english.isNotEmpty)
+                              Text(
+                                chapter.english,
+                                style: const TextStyle(
+                                  color: AppColors.textOnDarkMuted,
+                                  fontFamily: 'Inter',
+                                  fontSize: 12,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        isExpanded
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                        color: AppColors.goldMuted,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (isExpanded) ...[
+                const Divider(color: AppColors.goldMuted, height: 1),
+                ...chapterHadiths.map((h) => _HadithCard(
+                      hadith: h,
+                      expanded: _expandedHadithId == h.id,
+                      onToggle: () {
+                        setState(() {
+                          _expandedHadithId =
+                              _expandedHadithId == h.id ? null : h.id;
+                        });
+                      },
+                      compact: true,
+                    )),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
 class _HadithCard extends StatefulWidget {
-  final HadithModel hadith;
-  const _HadithCard({required this.hadith});
+  final HadithEntry hadith;
+  final bool expanded;
+  final VoidCallback onToggle;
+  final bool compact;
+
+  const _HadithCard({
+    required this.hadith,
+    required this.expanded,
+    required this.onToggle,
+    this.compact = false,
+  });
 
   @override
   State<_HadithCard> createState() => _HadithCardState();
 }
 
 class _HadithCardState extends State<_HadithCard> {
-  bool _expanded = false;
-
   @override
   Widget build(BuildContext context) {
     final h = widget.hadith;
+    final margin = widget.compact
+        ? const EdgeInsets.symmetric(horizontal: AppDimensions.md, vertical: 4)
+        : const EdgeInsets.only(bottom: AppDimensions.lg);
+
     return Container(
-      margin: const EdgeInsets.only(bottom: AppDimensions.lg),
+      margin: margin,
       padding: const EdgeInsets.all(AppDimensions.lg),
       decoration: BoxDecoration(
-        color: AppColors.navyLight,
+        color: widget.compact ? AppColors.navy : AppColors.navyLight,
         borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
         border: Border.all(color: AppColors.goldMuted),
       ),
@@ -115,7 +221,8 @@ class _HadithCardState extends State<_HadithCard> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.goldMuted,
                   borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
@@ -155,21 +262,27 @@ class _HadithCardState extends State<_HadithCard> {
             decoration: BoxDecoration(
               color: AppColors.navy,
               borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-              border: Border.all(color: AppColors.goldMuted.withValues(alpha: 0.3)),
+              border:
+                  Border.all(color: AppColors.goldMuted.withValues(alpha: 0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'عَنْ ${h.narrator} قَالَ:',
-                  style: const TextStyle(
-                    color: AppColors.goldLight,
-                    fontFamily: 'Amiri',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                if (h.narrator.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppDimensions.sm),
+                    child: Text(
+                      h.narrator.contains('رضي الله')
+                          ? 'عَنْ ${h.narrator} قَالَ:'
+                          : 'عَنْ ${h.narrator} قَالَ:',
+                      style: const TextStyle(
+                        color: AppColors.goldLight,
+                        fontFamily: 'Amiri',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppDimensions.sm),
                 Text(
                   '«${h.fullArabic.replaceAll('"', '').replaceAll('"', '')}»',
                   textDirection: TextDirection.rtl,
@@ -185,11 +298,11 @@ class _HadithCardState extends State<_HadithCard> {
             ),
           ),
           const SizedBox(height: AppDimensions.sm),
-          if (_expanded) ...[
+          if (widget.expanded && h.translation.isNotEmpty) ...[
             const Divider(color: AppColors.goldMuted),
             const SizedBox(height: AppDimensions.sm),
             Text(
-              'الشرح: ${h.translation}',
+              h.translation,
               style: const TextStyle(
                 color: AppColors.textOnDarkMuted,
                 fontFamily: 'Inter',
@@ -199,37 +312,43 @@ class _HadithCardState extends State<_HadithCard> {
             ),
             const SizedBox(height: AppDimensions.sm),
           ],
-          Center(
-            child: GestureDetector(
-              onTap: () => setState(() => _expanded = !_expanded),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.navy,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
-                  border: Border.all(color: AppColors.goldMuted),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _expanded ? 'إخفاء الشرح' : 'عرض الشرح',
-                      style: const TextStyle(
-                        color: AppColors.goldMuted,
-                        fontFamily: 'Amiri',
-                        fontSize: 12,
+          if (h.translation.isNotEmpty)
+            Center(
+              child: GestureDetector(
+                onTap: widget.onToggle,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.navy,
+                    borderRadius:
+                        BorderRadius.circular(AppDimensions.radiusFull),
+                    border: Border.all(color: AppColors.goldMuted),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        widget.expanded ? 'إخفاء الترجمة' : 'عرض الترجمة',
+                        style: const TextStyle(
+                          color: AppColors.goldMuted,
+                          fontFamily: 'Amiri',
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      _expanded ? Icons.expand_less : Icons.expand_more,
-                      color: AppColors.goldMuted, size: 16,
-                    ),
-                  ],
+                      const SizedBox(width: 4),
+                      Icon(
+                        widget.expanded
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                        color: AppColors.goldMuted,
+                        size: 16,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

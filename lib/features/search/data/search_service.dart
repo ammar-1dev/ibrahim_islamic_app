@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import '../../hadith/data/hadith_search_index.dart';
 
 class SearchResult {
   final String type;
@@ -28,9 +29,7 @@ class SearchService {
 
   Future<void> _ensureHadith() async {
     if (_hadiths != null) return;
-    final str = await rootBundle.loadString('assets/hadith/hadith_40.json');
-    final data = json.decode(str) as Map<String, dynamic>;
-    _hadiths = (data['hadiths'] as List).cast<Map<String, dynamic>>();
+    _hadiths = await HadithSearchIndex().getAll();
   }
 
   Future<void> _ensureDuas() async {

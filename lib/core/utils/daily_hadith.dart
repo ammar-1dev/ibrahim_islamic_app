@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'package:flutter/services.dart';
+import '../../features/hadith/data/hadith_search_index.dart';
 
 class DailyHadith {
   final int id;
@@ -39,6 +38,13 @@ class DailyHadithSelector {
 
   static Future<DailyHadith> getDailyHadith() async {
     if (_hadiths == null) await _load();
+    if (_hadiths == null || _hadiths!.isEmpty) {
+      return DailyHadith(
+        id: 0, number: 0, category: '',
+        narrator: '', source: '',
+        arabic: '', fullArabic: '', translation: '',
+      );
+    }
     final periodIndex = _sixHourPeriodIndex(DateTime.now());
     return _hadiths![periodIndex % _hadiths!.length];
   }
@@ -50,10 +56,7 @@ class DailyHadithSelector {
   }
 
   static Future<void> _load() async {
-    final str = await rootBundle.loadString('assets/hadith/hadith_40.json');
-    final data = json.decode(str) as Map<String, dynamic>;
-    _hadiths = (data['hadiths'] as List)
-        .map((e) => DailyHadith.fromJson(e as Map<String, dynamic>))
-        .toList();
+    final all = await HadithSearchIndex().getAll();
+    _hadiths = all.map((e) => DailyHadith.fromJson(e)).toList();
   }
 }
