@@ -57,6 +57,14 @@ class BookRepository {
     6: 'assets/books/tafsir_ibn_kathir.json',
     7: 'assets/books/tafsir_tabari.json',
     23: 'assets/books/tafsir_saadi.json',
+    27: 'assets/books/ibn_qayyim_27.json',
+    28: 'assets/books/ibn_qayyim_28.json',
+    29: 'assets/books/ibn_qayyim_29.json',
+    30: 'assets/books/ibn_qayyim_30.json',
+    31: 'assets/books/ibn_qayyim_31.json',
+    32: 'assets/books/ibn_qayyim_32.json',
+    33: 'assets/books/ibn_qayyim_33.json',
+    34: 'assets/books/ibn_qayyim_34.json',
   };
 
   Future<List<Map<String, dynamic>>> loadBooksMeta() async {

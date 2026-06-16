@@ -8,6 +8,7 @@ import '../../../core/constants/app_dimensions.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../core/theme/font_size_provider.dart';
 import '../../../core/storage/local_storage.dart';
+import '../../../core/services/locale_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -16,6 +17,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeNotifierProvider);
     final fontScale = ref.watch(fontScaleNotifierProvider);
+    final locale = ref.watch(localeProvider);
     final storage = LocalStorage();
     final bookmarks = storage.getBookmarks();
     final quranPage = storage.getQuranPage();
@@ -36,7 +38,7 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: AppDimensions.xl),
             _buildStatsRow(quranPage, bookmarks.length, spiritualLevel),
             const SizedBox(height: AppDimensions.xl),
-            _buildMenuSection(context, ref, themeMode, fontScale),
+            _buildMenuSection(context, ref, themeMode, fontScale, locale),
             const SizedBox(height: AppDimensions.xl),
             _buildFooter(),
           ],
@@ -111,7 +113,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMenuSection(BuildContext context, WidgetRef ref, ThemeMode themeMode, double fontScale) {
+  Widget _buildMenuSection(BuildContext context, WidgetRef ref, ThemeMode themeMode, double fontScale, Locale locale) {
     return Column(
       children: [
         _buildMenuItem(
@@ -124,6 +126,12 @@ class ProfileScreen extends ConsumerWidget {
           title: 'المظهر',
           subtitle: _themeModeLabel(themeMode),
           onTap: () => ref.read(themeModeNotifierProvider.notifier).toggleTheme(),
+        ),
+        _buildMenuItem(
+          icon: Icons.language,
+          title: 'اللغة',
+          subtitle: _localeLabel(locale),
+          onTap: () => _showLocaleSheet(context, ref),
         ),
         _buildMenuItem(
           icon: Icons.text_fields,
@@ -197,6 +205,69 @@ class ProfileScreen extends ConsumerWidget {
     if (scale <= 1.05) return 'متوسط';
     if (scale <= 1.25) return 'كبير';
     return 'كبير جداً';
+  }
+
+  String _localeLabel(Locale locale) {
+    switch (locale.languageCode) {
+      case 'ar': return 'العربية';
+      case 'en': return 'English';
+      case 'fr': return 'Français';
+      case 'ru': return 'Русский';
+      case 'tr': return 'Türkçe';
+      case 'es': return 'Español';
+      default: return 'English';
+    }
+  }
+
+  void _showLocaleSheet(BuildContext context, WidgetRef ref) {
+    final locales = [
+      const Locale('ar'), const Locale('en'), const Locale('fr'),
+      const Locale('ru'), const Locale('tr'), const Locale('es'),
+    ];
+    final labels = ['العربية', 'English', 'Français', 'Русский', 'Türkçe', 'Español'];
+    final current = ref.read(localeProvider);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(AppDimensions.lg),
+        decoration: const BoxDecoration(
+          color: AppColors.navy,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusXl)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.gold.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: AppDimensions.lg),
+            const Text('اللغة', style: TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 22, fontWeight: FontWeight.w700)),
+            const Divider(color: AppColors.goldMuted),
+            ...List.generate(locales.length, (i) {
+              final isSelected = current.languageCode == locales[i].languageCode;
+              return ListTile(
+                title: Text(labels[i], style: const TextStyle(
+                  color: AppColors.textOnDark,
+                  fontFamily: 'Amiri',
+                  fontSize: 16,
+                )),
+                trailing: isSelected ? const Icon(Icons.check, color: AppColors.gold) : null,
+                onTap: () async {
+                  await ref.read(localeProvider.notifier).setLocale(locales[i]);
+                  Navigator.pop(ctx);
+                },
+              );
+            }),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showFontSizeSheet(BuildContext context, WidgetRef ref, double currentScale) {

@@ -8,6 +8,7 @@ import 'core/ai/remote_config_service.dart';
 import 'core/network/api_client.dart';
 import 'core/storage/local_storage.dart';
 import 'core/utils/notification_service.dart';
+import 'core/services/locale_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,9 +40,13 @@ void main() async {
     NotificationService().scheduleAll();
   }
 
+  final container = ProviderContainer();
+  await container.read(localeProvider.notifier).load();
+
   runApp(
-    const ProviderScope(
-      child: IbrahimApp(),
+    UncontrolledProviderScope(
+      container: container,
+      child: const IbrahimApp(),
     ),
   );
 }
