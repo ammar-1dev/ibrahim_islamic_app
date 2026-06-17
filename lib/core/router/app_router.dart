@@ -33,6 +33,8 @@ import '../../features/books/presentation/islamic_books_screen.dart';
 import '../../features/books/presentation/book_reader_screen.dart';
 import '../../features/seerah/presentation/seerah_screen.dart';
 import '../../features/companions/presentation/companions_screen.dart';
+import '../../features/stories/presentation/stories_screen.dart';
+import '../../features/stories/presentation/story_detail_screen.dart';
 import '../../features/fiqh/presentation/fiqh_screen.dart';
 import '../../features/quran/presentation/quran_search_screen.dart';
 import '../../features/quran/presentation/bookmarks_screen.dart';
@@ -76,6 +78,7 @@ GoRouter appRouter(AppRouterRef ref) {
           GoRoute(path: '/womens-section', builder: (context, state) => const WomensSectionScreen()),
           GoRoute(path: '/ruqyah', builder: (context, state) => const RuqyahScreen()),
           GoRoute(path: '/social', builder: (context, state) => const SocialScreen()),
+          GoRoute(path: '/stories', builder: (context, state) => const StoriesScreen()),
         ],
       ),
       GoRoute(path: '/ai-assistant', builder: (context, state) => const AiChatScreen()),
@@ -146,6 +149,13 @@ GoRouter appRouter(AppRouterRef ref) {
       ),
       GoRoute(path: '/fiqh', builder: (context, state) => const FiqhScreen()),
       GoRoute(path: '/companions', builder: (context, state) => const CompanionsScreen()),
+      GoRoute(
+        path: '/stories/:id',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 1;
+          return StoryDetailScreen(storyId: id);
+        },
+      ),
       GoRoute(
         path: '/tajweed-reader',
         builder: (context, state) {

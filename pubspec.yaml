@@ -90,6 +90,7 @@ flutter:
     - assets/companions/
     - assets/adhkar/
     - assets/fiqh/
+    - assets/stories/
 
 fonts:
     - family: Amiri

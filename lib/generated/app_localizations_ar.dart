@@ -124,6 +124,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get quickAsbabNuzul => 'أسباب النزول';
 
   @override
+  String get quickStories => 'قصص إسلامية';
+
+  @override
   String get prayerFajr => 'الفجر';
 
   @override

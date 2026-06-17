@@ -124,6 +124,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get quickAsbabNuzul => 'Асбаб ан-нузуль';
 
   @override
+  String get quickStories => 'Исламские истории';
+
+  @override
   String get prayerFajr => 'Фаджр';
 
   @override

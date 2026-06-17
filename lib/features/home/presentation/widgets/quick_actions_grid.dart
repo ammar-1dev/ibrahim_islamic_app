@@ -34,6 +34,7 @@ class QuickActionsGrid extends StatelessWidget {
       _QuickAction(icon: Icons.people_outline, label: l.quickSocial, route: '/social', color: const Color(0xFF00BCD4)),
       _QuickAction(icon: Icons.fingerprint, label: l.quickNamesOfAllah, route: '/names', color: const Color(0xFF009688)),
       _QuickAction(icon: Icons.auto_stories, label: l.quickAsbabNuzul, route: '/asbab-book', color: const Color(0xFFFF9800)),
+      _QuickAction(icon: Icons.history_edu, label: l.quickStories, route: '/stories', color: const Color(0xFFE53935)),
     ];
 
     return Column(

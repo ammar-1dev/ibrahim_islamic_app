@@ -334,6 +334,12 @@ abstract class AppLocalizations {
   /// **'Asbab al-Nuzul'**
   String get quickAsbabNuzul;
 
+  /// No description provided for @quickStories.
+  ///
+  /// In en, this message translates to:
+  /// **'Islamic Stories'**
+  String get quickStories;
+
   /// No description provided for @prayerFajr.
   ///
   /// In en, this message translates to:
