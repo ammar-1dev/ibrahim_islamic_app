@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -85,7 +86,7 @@ Future<void> main() async {
   if (Platform.isAndroid || Platform.isIOS) {
     await NotificationService().init();
     NotificationService().scheduleAll();
-    await audio_svc.AudioService.init(
+    unawaited(audio_svc.AudioService.init(
       builder: () => QuranAudioHandler(),
       config: const audio_svc.AudioServiceConfig(
         androidNotificationChannelId: 'com.ibrahim.islamic.ibrahim.audio',
@@ -94,7 +95,7 @@ Future<void> main() async {
         androidStopForegroundOnPause: true,
         androidNotificationClickStartsActivity: true,
       ),
-    );
+    ));
   }
 
   final container = ProviderContainer();
