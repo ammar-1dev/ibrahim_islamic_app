@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/utils/audio_service.dart';
@@ -31,6 +33,12 @@ final surahNames = {
   111: 'المسد', 112: 'الإخلاص', 113: 'الفلق', 114: 'الناس',
 };
 
+enum RepeatMode {
+  none,
+  one,
+  all,
+}
+
 class SurahAudioScreen extends ConsumerStatefulWidget {
   const SurahAudioScreen({super.key});
 
@@ -44,25 +52,78 @@ class _SurahAudioScreenState extends ConsumerState<SurahAudioScreen> {
   Duration _position = Duration.zero;
   Duration? _duration;
   double _volume = 1.0;
+  double _speed = 1.0;
   String _reciterCode = 'afs';
+  RepeatMode _repeatMode = RepeatMode.none;
+
+  int? _sleepTimerMinutes;
+  Timer? _sleepTimer;
+
+  StreamSubscription<ProcessingState>? _processingSub;
 
   @override
   void initState() {
     super.initState();
-    ref.read(audioServiceProvider).positionStream.listen((p) {
+    final audio = ref.read(audioServiceProvider);
+    audio.positionStream.listen((p) {
       if (mounted) setState(() => _position = p);
     });
-    ref.read(audioServiceProvider).durationStream.listen((d) {
+    audio.durationStream.listen((d) {
       if (mounted) setState(() => _duration = d);
     });
-    ref.read(audioServiceProvider).stateStream.listen((state) {
+    audio.stateStream.listen((state) {
       if (mounted) setState(() => _isPlaying = state.playing);
+    });
+    _processingSub = audio.processingStateStream.listen((state) {
+      if (state == ProcessingState.completed && _currentSurah != null) {
+        _onSurahComplete();
+      }
     });
   }
 
+  @override
+  void dispose() {
+    _sleepTimer?.cancel();
+    _processingSub?.cancel();
+    super.dispose();
+  }
+
+  void _onSurahComplete() {
+    if (_repeatMode == RepeatMode.one) {
+      _playSurah(_currentSurah!);
+      return;
+    }
+    if (_sleepTimerMinutes == 0) {
+      _cancelSleepTimer();
+      return;
+    }
+    final next = _currentSurah! + 1;
+    if (next > 114) {
+      if (_repeatMode == RepeatMode.all) {
+        _playSurah(1);
+      }
+      return;
+    }
+    _playSurah(next);
+  }
+
   Future<void> _playSurah(int number) async {
+    if (_sleepTimerMinutes == 0) {
+      _cancelSleepTimer();
+      return;
+    }
     setState(() => _currentSurah = number);
-    await ref.read(audioServiceProvider).play(QuranAudio.getSurahUrl(number, reciterCode: _reciterCode));
+    final audio = ref.read(audioServiceProvider);
+    await audio.play(
+      QuranAudio.getSurahUrl(number, reciterCode: _reciterCode),
+      surahNumber: number,
+      surahName: surahNames[number],
+      reciterName: _reciterName(),
+      reciterCode: _reciterCode,
+    );
+    if (audio.speed != _speed) {
+      await audio.setSpeed(_speed);
+    }
   }
 
   Future<void> _togglePlay() async {
@@ -72,6 +133,46 @@ class _SurahAudioScreenState extends ConsumerState<SurahAudioScreen> {
     } else {
       await audio.resume();
     }
+  }
+
+  Future<void> _nextSurah() async {
+    if (_currentSurah == null) return;
+    final next = _currentSurah! >= 114 ? 1 : _currentSurah! + 1;
+    await _playSurah(next);
+  }
+
+  Future<void> _prevSurah() async {
+    if (_currentSurah == null) return;
+    final prev = _currentSurah! <= 1 ? 114 : _currentSurah! - 1;
+    await _playSurah(prev);
+  }
+
+  void _startSleepTimer(int? minutes) {
+    _sleepTimer?.cancel();
+    setState(() {
+      _sleepTimerMinutes = minutes;
+    });
+    if (minutes == null || minutes <= 0) return;
+    if (minutes == 0) return;
+    _sleepTimer = Timer(Duration(minutes: minutes), () {
+      if (!mounted) return;
+      ref.read(audioServiceProvider).stop();
+      setState(() {
+        _sleepTimerMinutes = null;
+        _isPlaying = false;
+      });
+    });
+  }
+
+  void _cancelSleepTimer() {
+    _sleepTimer?.cancel();
+    setState(() => _sleepTimerMinutes = null);
+  }
+
+  String _sleepTimerLabel() {
+    if (_sleepTimerMinutes == null) return 'مؤقت';
+    if (_sleepTimerMinutes == 0) return 'بعد السورة';
+    return '$_sleepTimerMinutes د';
   }
 
   @override
@@ -171,7 +272,7 @@ class _SurahAudioScreenState extends ConsumerState<SurahAudioScreen> {
     final progress = dur.inSeconds > 0 ? pos.inSeconds / dur.inSeconds : 0.0;
 
     return Container(
-      padding: const EdgeInsets.all(AppDimensions.md),
+      padding: const EdgeInsets.fromLTRB(AppDimensions.md, AppDimensions.md, AppDimensions.md, AppDimensions.sm),
       decoration: const BoxDecoration(
         color: AppColors.navyLight,
         border: Border(top: BorderSide(color: AppColors.goldMuted)),
@@ -190,34 +291,243 @@ class _SurahAudioScreenState extends ConsumerState<SurahAudioScreen> {
               minHeight: 4,
             ),
           ),
-          const SizedBox(height: AppDimensions.sm),
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(_formatDuration(pos), style: const TextStyle(color: AppColors.textOnDarkMuted, fontFamily: 'Inter', fontSize: 12)),
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(_volume > 0 ? Icons.volume_up : Icons.volume_off, color: AppColors.gold, size: 18),
-                    onPressed: () {
-                      _volume = _volume > 0 ? 0 : 1.0;
-                      ref.read(audioServiceProvider).setVolume(_volume);
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, color: AppColors.gold, size: 28),
-                    onPressed: _togglePlay,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.stop, color: AppColors.gold, size: 18),
-                    onPressed: () => ref.read(audioServiceProvider).stop(),
-                  ),
-                ],
-              ),
               Text(_formatDuration(dur), style: const TextStyle(color: AppColors.textOnDarkMuted, fontFamily: 'Inter', fontSize: 12)),
             ],
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _iconButton(Icons.skip_previous, _prevSurah),
+              const SizedBox(width: 4),
+              _iconButton(Icons.replay_10, () => _seekRelative(-10)),
+              const SizedBox(width: 12),
+              _iconButton(_isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled, _togglePlay, size: 36),
+              const SizedBox(width: 12),
+              _iconButton(Icons.forward_10, () => _seekRelative(10)),
+              const SizedBox(width: 4),
+              _iconButton(Icons.skip_next, _nextSurah),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildSleepTimerButton(),
+              _buildSpeedButton(),
+              _buildRepeatButton(),
+              _buildVolumeButton(),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _iconButton(IconData icon, VoidCallback onPressed, {double size = 24}) {
+    return IconButton(
+      icon: Icon(icon, color: AppColors.gold, size: size),
+      onPressed: onPressed,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+    );
+  }
+
+  Future<void> _seekRelative(int seconds) async {
+    final audio = ref.read(audioServiceProvider);
+    final newPos = _position + Duration(seconds: seconds);
+    await audio.seek(Duration(seconds: newPos.inSeconds.clamp(0, _duration?.inSeconds ?? 0)));
+  }
+
+  Widget _buildVolumeButton() {
+    return GestureDetector(
+      onTap: () {
+        _volume = _volume > 0 ? 0 : 1.0;
+        ref.read(audioServiceProvider).setVolume(_volume);
+        setState(() {});
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.white10,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(_volume > 0 ? Icons.volume_up : Icons.volume_off, color: AppColors.gold, size: 16),
+            const SizedBox(width: 4),
+            Text(_volume > 0 ? 'صوت' : 'كتم', style: const TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSpeedButton() {
+    return GestureDetector(
+      onTap: () => _showSpeedPicker(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.white10,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.speed, color: AppColors.gold, size: 16),
+            const SizedBox(width: 4),
+            Text('${_speed}x', style: const TextStyle(color: AppColors.gold, fontFamily: 'Inter', fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRepeatButton() {
+    String label;
+    IconData icon;
+    if (_repeatMode == RepeatMode.one) {
+      label = 'تكرار 1';
+      icon = Icons.repeat_one;
+    } else if (_repeatMode == RepeatMode.all) {
+      label = 'تكرار الكل';
+      icon = Icons.repeat;
+    } else {
+      label = 'تكرار';
+      icon = Icons.repeat;
+    }
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _repeatMode = switch (_repeatMode) {
+            RepeatMode.none => RepeatMode.one,
+            RepeatMode.one => RepeatMode.all,
+            RepeatMode.all => RepeatMode.none,
+          };
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: _repeatMode != RepeatMode.none ? AppColors.goldMuted : Colors.white10,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: AppColors.gold, size: 16),
+            const SizedBox(width: 4),
+            Text(label, style: const TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSleepTimerButton() {
+    final isActive = _sleepTimerMinutes != null;
+    return GestureDetector(
+      onTap: () => _showSleepTimerPicker(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.goldMuted : Colors.white10,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.timer, color: AppColors.gold, size: 16),
+            const SizedBox(width: 4),
+            Text(_sleepTimerLabel(), style: const TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showSleepTimerPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(AppDimensions.lg),
+        decoration: const BoxDecoration(
+          color: AppColors.navy,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusXl)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white30, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            const Text('مؤقت النوم', style: TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 20, fontWeight: FontWeight.bold)),
+            const Divider(color: AppColors.goldMuted, height: 32),
+            _timerOption('إيقاف المؤقت', null),
+            _timerOption('بعد نهاية السورة الحالية', 0),
+            _timerOption('15 دقيقة', 15),
+            _timerOption('30 دقيقة', 30),
+            _timerOption('45 دقيقة', 45),
+            _timerOption('60 دقيقة', 60),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _timerOption(String label, int? minutes) {
+    final selected = _sleepTimerMinutes == minutes;
+    return ListTile(
+      leading: Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked, color: AppColors.gold),
+      title: Text(label, style: TextStyle(color: Colors.white, fontFamily: 'Amiri', fontSize: 16, fontWeight: selected ? FontWeight.bold : FontWeight.normal)),
+      onTap: () {
+        Navigator.pop(context);
+        if (minutes == null) {
+          _cancelSleepTimer();
+        } else {
+          _startSleepTimer(minutes);
+        }
+      },
+    );
+  }
+
+  void _showSpeedPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(AppDimensions.lg),
+        decoration: const BoxDecoration(
+          color: AppColors.navy,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppDimensions.radiusXl)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white30, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            const Text('سرعة التشغيل', style: TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 20, fontWeight: FontWeight.bold)),
+            const Divider(color: AppColors.goldMuted, height: 32),
+            ...[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((speed) {
+              final selected = _speed == speed;
+              return ListTile(
+                leading: Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked, color: AppColors.gold),
+                title: Text('${speed}x', style: TextStyle(color: Colors.white, fontFamily: 'Inter', fontSize: 16, fontWeight: selected ? FontWeight.bold : FontWeight.normal)),
+                onTap: () {
+                  setState(() => _speed = speed);
+                  ref.read(audioServiceProvider).setSpeed(speed);
+                  Navigator.pop(ctx);
+                },
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

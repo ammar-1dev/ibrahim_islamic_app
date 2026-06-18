@@ -10,6 +10,8 @@ class QuranAudio {
     'المنشاوي': ReciterInfo(code: 'minsh', baseUrl: 'https://server10.mp3quran.net/minsh'),
     'عبد الباسط': ReciterInfo(code: 'basit', baseUrl: 'https://server7.mp3quran.net/basit'),
     'ماهر المعيقلي': ReciterInfo(code: 'maher', baseUrl: 'https://server12.mp3quran.net/maher'),
+    'ياسر الدوسري': ReciterInfo(code: 'yasser', baseUrl: 'https://server11.mp3quran.net/yasser'),
+    'محمد اللحيدان': ReciterInfo(code: 'lhdan', baseUrl: 'https://server8.mp3quran.net/lhdan'),
   };
 
   static String getSurahUrl(int surahNumber, {String reciterCode = 'afs'}) {

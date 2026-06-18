@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/services/recent_activity_service.dart';
 import '../../azkar/data/azkar_audio_service.dart';
+import '../../azkar/data/mishari_audio_service.dart';
 
 class Zikr {
   final int id;
@@ -61,11 +61,6 @@ class AdhkarScreen extends ConsumerStatefulWidget {
   ConsumerState<AdhkarScreen> createState() => _AdhkarScreenState();
 }
 
-// مسارات مقاطع صوتية مجانية لأذكار الصباح والمساء
-// المصدر: makkahlive.net - مقاطع صوتية مفتوحة المصدر بصوت مشاري العفاسي
-const _morningAudioUrl = 'https://www.islamcan.com/audio/azkar/morning.mp3';
-const _eveningAudioUrl = 'https://www.islamcan.com/audio/azkar/evening.mp3';
-
 class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
   late int _mainTabIndex;
   late int _timeTabIndex;
@@ -78,11 +73,6 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
   bool _loading = true;
   String? _error;
 
-  // مشغّل الصوت الكامل لأذكار الصباح والمساء
-  final AudioPlayer _fullAudioPlayer = AudioPlayer();
-  bool _fullAudioPlaying = false;
-  bool _fullAudioLoading = false;
-
   @override
   void initState() {
     super.initState();
@@ -90,47 +80,6 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
     _timeTabIndex = widget.initialTimeTab;
     recordActivity(id: 'adhkar', title: 'الأذكار', subtitle: 'الأذكار النبوية', route: '/adhkar', icon: '📿');
     _loadAll();
-    _fullAudioPlayer.playerStateStream.listen((state) {
-      if (mounted) {
-        setState(() {
-          _fullAudioPlaying = state.playing;
-          _fullAudioLoading = state.processingState == ProcessingState.loading ||
-              state.processingState == ProcessingState.buffering;
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _fullAudioPlayer.dispose();
-    super.dispose();
-  }
-
-  Future<void> _toggleFullAudio() async {
-    if (_fullAudioLoading) return;
-    try {
-      if (_fullAudioPlaying) {
-        await _fullAudioPlayer.pause();
-      } else {
-        final url = _timeTabIndex == 0 ? _morningAudioUrl : _eveningAudioUrl;
-        if (_fullAudioPlayer.audioSource == null) {
-          await _fullAudioPlayer.setUrl(url);
-        }
-        await _fullAudioPlayer.play();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تعذّر تشغيل الصوت، تأكد من اتصالك بالإنترنت', style: TextStyle(fontFamily: 'Amiri')), backgroundColor: AppColors.navyLight),
-        );
-      }
-    }
-  }
-
-  Future<void> _stopFullAudio() async {
-    await _fullAudioPlayer.stop();
-    await _fullAudioPlayer.seek(Duration.zero);
   }
 
   Future<void> _loadAll() async {
@@ -250,6 +199,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
       child: GestureDetector(
         onTap: () {
           ref.read(azkarAudioServiceProvider).stop();
+          ref.read(mishariAzkarAudioProvider).stop();
           setState(() => _mainTabIndex = index);
         },
         child: Container(
@@ -296,6 +246,10 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
 
   Widget _buildFullAudioBanner() {
     final label = _timeTabIndex == 0 ? 'أذكار الصباح' : 'أذكار المساء';
+    final mishari = ref.watch(mishariAzkarAudioProvider);
+    final isPlaying = mishari.isPlaying && mishari.currentCategory == (_timeTabIndex == 0 ? 'morning' : 'evening');
+    final isLoading = mishari.isLoading;
+
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -326,35 +280,35 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
               children: [
                 Text('استمع إلى $label',
                   style: const TextStyle(color: AppColors.gold, fontFamily: 'Amiri', fontSize: 14, fontWeight: FontWeight.bold)),
-                const Text('بصوت مشاري العفاسي',
+                const Text('بصوت مشاري بن راشد العفاسي',
                   style: TextStyle(color: AppColors.textOnDarkMuted, fontFamily: 'Amiri', fontSize: 12)),
               ],
             ),
           ),
-          if (_fullAudioLoading)
+          if (isLoading)
             const SizedBox(width: 36, height: 36,
               child: Padding(padding: EdgeInsets.all(6), child: CircularProgressIndicator(color: AppColors.gold, strokeWidth: 2)))
           else
             GestureDetector(
-              onTap: _toggleFullAudio,
+              onTap: () => _toggleFullAudio(mishari),
               child: Container(
                 width: 36, height: 36,
                 decoration: BoxDecoration(
-                  color: _fullAudioPlaying ? AppColors.gold : AppColors.navyLight,
+                  color: isPlaying ? AppColors.gold : AppColors.navyLight,
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.gold),
                 ),
                 child: Icon(
-                  _fullAudioPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                  color: _fullAudioPlaying ? AppColors.navy : AppColors.gold,
+                  isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                  color: isPlaying ? AppColors.navy : AppColors.gold,
                   size: 22,
                 ),
               ),
             ),
-          if (_fullAudioPlaying) ...[
+          if (isPlaying) ...[
             const SizedBox(width: 8),
             GestureDetector(
-              onTap: _stopFullAudio,
+              onTap: () => mishari.stop(),
               child: Container(
                 width: 32, height: 32,
                 decoration: BoxDecoration(
@@ -369,6 +323,19 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
         ],
       ),
     );
+  }
+
+  void _toggleFullAudio(MishariAzkarAudioService mishari) {
+    if (mishari.isLoading) return;
+    if (mishari.isPlaying && mishari.currentCategory == (_timeTabIndex == 0 ? 'morning' : 'evening')) {
+      mishari.stop();
+    } else {
+      if (_timeTabIndex == 0) {
+        mishari.playMorning(totalAthkar: _morning.length);
+      } else {
+        mishari.playEvening(totalAthkar: _evening.length);
+      }
+    }
   }
 
   Widget _buildTimeSubTabs() {
@@ -391,6 +358,7 @@ class _AdhkarScreenState extends ConsumerState<AdhkarScreen> {
       child: GestureDetector(
         onTap: () {
           ref.read(azkarAudioServiceProvider).stop();
+          ref.read(mishariAzkarAudioProvider).stop();
           setState(() => _timeTabIndex = index);
         },
         child: Container(
@@ -490,10 +458,19 @@ class _MiniPlayer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final audio = ref.watch(azkarAudioServiceProvider);
-    if (!audio.isPlaying && !audio.isPaused) return const SizedBox.shrink();
+    final tts = ref.watch(azkarAudioServiceProvider);
+    final mishari = ref.watch(mishariAzkarAudioProvider);
 
-    final index = audio.currentIndex;
+    final ttsActive = tts.isPlaying || tts.isPaused;
+    final mishariActive = mishari.isPlaying || mishari.isPaused;
+
+    if (!ttsActive && !mishariActive) return const SizedBox.shrink();
+
+    final miscPlayer = ttsActive
+        ? _AudioPlayerState(tts.isPaused, tts.isPlaying, tts.currentIndex, tts.togglePause, tts.stop, tts.playNext, tts.playPrevious)
+        : _AudioPlayerState(mishari.isPaused, mishari.isPlaying, mishari.currentIndex, mishari.togglePause, mishari.stop, null, null);
+
+    final index = miscPlayer.index;
     final zikr = index >= 0 && index < currentList.length ? currentList[index] : null;
 
     return Positioned(
@@ -519,7 +496,7 @@ class _MiniPlayer extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    zikr != null ? 'ذِكر ${index + 1} من ${currentList.length}' : '',
+                    zikr != null ? 'بصوت مشاري بن راشد' : '',
                     style: const TextStyle(color: AppColors.gold, fontFamily: 'Inter', fontSize: 11),
                   ),
                   if (zikr != null)
@@ -534,32 +511,32 @@ class _MiniPlayer extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: AppDimensions.sm),
-            if (index > 0)
+            if (miscPlayer.canPrevious)
               IconButton(
                 icon: const Icon(Icons.skip_previous_rounded, color: AppColors.gold, size: 24),
-                onPressed: () => audio.playPrevious(),
+                onPressed: miscPlayer.playPrevious!,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
             IconButton(
               icon: Icon(
-                audio.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                miscPlayer.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
                 color: AppColors.gold, size: 28,
               ),
-              onPressed: () => audio.togglePause(),
+              onPressed: miscPlayer.togglePause,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
-            if (index < currentList.length - 1)
+            if (miscPlayer.canNext)
               IconButton(
                 icon: const Icon(Icons.skip_next_rounded, color: AppColors.gold, size: 24),
-                onPressed: () => audio.playNext(),
+                onPressed: miscPlayer.playNext!,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
               ),
             IconButton(
               icon: const Icon(Icons.stop_rounded, color: AppColors.textOnDarkMuted, size: 22),
-              onPressed: () => audio.stop(),
+              onPressed: miscPlayer.stop,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
@@ -568,6 +545,21 @@ class _MiniPlayer extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _AudioPlayerState {
+  final bool isPaused;
+  final bool isPlaying;
+  final int index;
+  final VoidCallback togglePause;
+  final VoidCallback stop;
+  final VoidCallback? playNext;
+  final VoidCallback? playPrevious;
+
+  bool get canNext => playNext != null;
+  bool get canPrevious => playPrevious != null;
+
+  _AudioPlayerState(this.isPaused, this.isPlaying, this.index, this.togglePause, this.stop, this.playNext, this.playPrevious);
 }
 
 class _ZikrList extends StatelessWidget {
@@ -615,8 +607,12 @@ class _ZikrCardState extends ConsumerState<_ZikrCard> {
   @override
   Widget build(BuildContext context) {
     final done = _remaining == 0;
-    final audio = ref.watch(azkarAudioServiceProvider);
-    final isCurrentTrack = audio.isPlaying && audio.currentIndex == widget.index;
+    final tts = ref.watch(azkarAudioServiceProvider);
+    final mishari = ref.watch(mishariAzkarAudioProvider);
+    final isMorningOrEvening = widget.zikr.category == 'morning' || widget.zikr.category == 'evening';
+    final isCurrentTrack = isMorningOrEvening
+        ? (mishari.isPlaying && mishari.currentCategory == widget.zikr.category)
+        : (tts.isPlaying && tts.currentIndex == widget.index);
 
     final borderColor = isCurrentTrack
         ? AppColors.success
@@ -659,10 +655,20 @@ class _ZikrCardState extends ConsumerState<_ZikrCard> {
                 const SizedBox(width: AppDimensions.sm),
                 GestureDetector(
                   onTap: () {
-                    final service = ref.read(azkarAudioServiceProvider);
                     if (isCurrentTrack) {
-                      service.stop();
+                      ref.read(mishariAzkarAudioProvider).stop();
+                      ref.read(azkarAudioServiceProvider).stop();
+                    } else if (isMorningOrEvening) {
+                      ref.read(azkarAudioServiceProvider).stop();
+                      final service = ref.read(mishariAzkarAudioProvider);
+                      if (widget.zikr.category == 'morning') {
+                        service.playMorning();
+                      } else {
+                        service.playEvening();
+                      }
                     } else {
+                      ref.read(mishariAzkarAudioProvider).stop();
+                      final service = ref.read(azkarAudioServiceProvider);
                       service.setQueue([widget.zikr.arabic]);
                       service.playAt(0);
                     }
@@ -676,7 +682,7 @@ class _ZikrCardState extends ConsumerState<_ZikrCard> {
                       borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
                     ),
                     child: Icon(
-                      isCurrentTrack && audio.isPlaying
+                      isCurrentTrack && (isMorningOrEvening ? mishari.isPlaying : tts.isPlaying)
                           ? Icons.volume_up_rounded
                           : Icons.play_arrow_rounded,
                       color: isCurrentTrack ? AppColors.success : AppColors.gold,

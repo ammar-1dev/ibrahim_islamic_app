@@ -6,6 +6,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/services/recent_activity_service.dart';
 import '../data/azkar_audio_service.dart';
+import '../data/mishari_audio_service.dart';
 
 class Zikr {
   final int id;
@@ -89,8 +90,8 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
           if (!_loading && currentList.isNotEmpty)
             Consumer(
               builder: (context, ref, _) {
-                final audio = ref.watch(azkarAudioServiceProvider);
-                final playing = audio.isPlaying;
+                final mishari = ref.watch(mishariAzkarAudioProvider);
+                final playing = mishari.isPlaying;
                 return IconButton(
                   icon: Icon(
                     playing ? Icons.stop_rounded : Icons.play_circle_fill_rounded,
@@ -99,7 +100,7 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
                   tooltip: playing ? 'إيقاف' : 'تشغيل الكل',
                   onPressed: () {
                     if (playing) {
-                      audio.stop();
+                      mishari.stop();
                     } else {
                       _playAll(ref, currentList);
                     }
@@ -118,7 +119,7 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
             Tab(text: 'أذكار الصباح'),
             Tab(text: 'أذكار المساء'),
           ],
-          onTap: (_) => ref.read(azkarAudioServiceProvider).stop(),
+          onTap: (_) { ref.read(azkarAudioServiceProvider).stop(); ref.read(mishariAzkarAudioProvider).stop(); },
         ),
       ),
       body: _loading
@@ -139,10 +140,13 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen>
   }
 
   void _playAll(WidgetRef ref, List<Zikr> azkar) {
-    final audio = ref.read(azkarAudioServiceProvider);
-    final texts = azkar.map((z) => z.arabic).toList();
-    audio.setQueue(texts);
-    audio.playAll();
+    final mishari = ref.read(mishariAzkarAudioProvider);
+    ref.read(azkarAudioServiceProvider).stop();
+    if (_tabController.index == 0) {
+      mishari.playMorning(totalAthkar: azkar.length);
+    } else {
+      mishari.playEvening(totalAthkar: azkar.length);
+    }
   }
 }
 
@@ -152,11 +156,8 @@ class _MiniPlayer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final audio = ref.watch(azkarAudioServiceProvider);
-    if (!audio.isPlaying && !audio.isPaused) return const SizedBox.shrink();
-
-    final index = audio.currentIndex;
-    final zikr = index >= 0 && index < currentList.length ? currentList[index] : null;
+    final mishari = ref.watch(mishariAzkarAudioProvider);
+    if (!mishari.isPlaying && !mishari.isPaused) return const SizedBox.shrink();
 
     return Positioned(
       bottom: 0,
@@ -181,47 +182,32 @@ class _MiniPlayer extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    zikr != null ? 'ذِكر ${index + 1} من ${currentList.length}' : '',
+                    'بصوت مشاري بن راشد',
                     style: const TextStyle(color: AppColors.gold, fontFamily: 'Inter', fontSize: 11),
                   ),
-                  if (zikr != null)
-                    Text(
-                      zikr.arabic,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textDirection: TextDirection.rtl,
-                      style: const TextStyle(color: AppColors.textOnDark, fontFamily: 'Amiri', fontSize: 14),
-                    ),
+                  Text(
+                    '${currentList.length} ذكر',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textDirection: TextDirection.rtl,
+                    style: const TextStyle(color: AppColors.textOnDark, fontFamily: 'Amiri', fontSize: 14),
+                  ),
                 ],
               ),
             ),
             const SizedBox(width: AppDimensions.sm),
-            if (index > 0)
-              IconButton(
-                icon: const Icon(Icons.skip_previous_rounded, color: AppColors.gold, size: 24),
-                onPressed: () => audio.playPrevious(),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-              ),
             IconButton(
               icon: Icon(
-                audio.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                mishari.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
                 color: AppColors.gold, size: 28,
               ),
-              onPressed: () => audio.togglePause(),
+              onPressed: () => mishari.togglePause(),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
-            if (index < currentList.length - 1)
-              IconButton(
-                icon: const Icon(Icons.skip_next_rounded, color: AppColors.gold, size: 24),
-                onPressed: () => audio.playNext(),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-              ),
             IconButton(
               icon: const Icon(Icons.stop_rounded, color: AppColors.textOnDarkMuted, size: 22),
-              onPressed: () => audio.stop(),
+              onPressed: () => mishari.stop(),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
@@ -276,25 +262,11 @@ class _ZikrCardState extends ConsumerState<_ZikrCard> {
     }
   }
 
-  Color _borderColor(WidgetRef ref) {
-    final audio = ref.watch(azkarAudioServiceProvider);
-    if (audio.isPlaying && audio.currentIndex == widget.index) return AppColors.success;
-    if (_remaining == 0) return AppColors.success.withValues(alpha: 0.5);
-    return AppColors.goldMuted;
-  }
-
-  Color _bgColor(WidgetRef ref) {
-    final audio = ref.watch(azkarAudioServiceProvider);
-    if (audio.isPlaying && audio.currentIndex == widget.index) return AppColors.success.withValues(alpha: 0.15);
-    if (_remaining == 0) return AppColors.success.withValues(alpha: 0.1);
-    return AppColors.navyLight;
-  }
-
   @override
   Widget build(BuildContext context) {
     final done = _remaining == 0;
-    final audio = ref.watch(azkarAudioServiceProvider);
-    final isCurrentTrack = audio.isPlaying && audio.currentIndex == widget.index;
+    final mishari = ref.watch(mishariAzkarAudioProvider);
+    final isCurrentTrack = mishari.isPlaying;
 
     return GestureDetector(
       onTap: _tap,
@@ -303,9 +275,15 @@ class _ZikrCardState extends ConsumerState<_ZikrCard> {
         margin: const EdgeInsets.only(bottom: AppDimensions.md),
         padding: const EdgeInsets.all(AppDimensions.lg),
         decoration: BoxDecoration(
-          color: _bgColor(ref),
+          color: isCurrentTrack
+              ? AppColors.success.withValues(alpha: 0.15)
+              : done ? AppColors.success.withValues(alpha: 0.1) : AppColors.navyLight,
           borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-          border: Border.all(color: _borderColor(ref)),
+          border: Border.all(
+            color: isCurrentTrack
+                ? AppColors.success
+                : done ? AppColors.success.withValues(alpha: 0.5) : AppColors.goldMuted,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,12 +306,15 @@ class _ZikrCardState extends ConsumerState<_ZikrCard> {
                 const SizedBox(width: AppDimensions.sm),
                 GestureDetector(
                   onTap: () {
-                    final service = ref.read(azkarAudioServiceProvider);
                     if (isCurrentTrack) {
-                      service.stop();
+                      mishari.stop();
                     } else {
-                      service.setQueue([widget.zikr.arabic]);
-                      service.playAt(0);
+                      ref.read(azkarAudioServiceProvider).stop();
+                      if (widget.zikr.category == 'morning') {
+                        mishari.playMorning();
+                      } else {
+                        mishari.playEvening();
+                      }
                     }
                   },
                   child: Container(
@@ -345,7 +326,7 @@ class _ZikrCardState extends ConsumerState<_ZikrCard> {
                       borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
                     ),
                     child: Icon(
-                      isCurrentTrack && audio.isPlaying
+                      isCurrentTrack && mishari.isPlaying
                           ? Icons.volume_up_rounded
                           : Icons.play_arrow_rounded,
                       color: isCurrentTrack ? AppColors.success : AppColors.gold,

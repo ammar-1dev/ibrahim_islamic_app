@@ -1532,6 +1532,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reciterMaher => 'Махир аль-Муайкли';
 
   @override
+  String get reciterDosari => 'Yasser Al-Dosari';
+
+  @override
+  String get reciterLuhaidan => 'Muhammad Al-Luhaidan';
+
+  @override
   String get notifPrayerTimes => 'Время намаза';
 
   @override

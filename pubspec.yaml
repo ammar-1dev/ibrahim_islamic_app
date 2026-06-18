@@ -51,7 +51,11 @@ dependencies:
   flutter_svg: ^2.0.10+1
   percent_indicator: ^4.2.3
   just_audio: ^0.9.40              # Quran audio
+  audio_service: ^0.18.0           # Background audio notification
   flutter_tts: ^4.0.0              # Azkar TTS
+
+  # Environment
+  flutter_dotenv: ^5.1.0
 
   # Utils
   intl: ^0.20.2
@@ -78,6 +82,7 @@ flutter:
   generate: true
 
   assets:
+    - .env
     - assets/quran/
     - assets/azkar/
     - assets/dua/
@@ -91,6 +96,7 @@ flutter:
     - assets/adhkar/
     - assets/fiqh/
     - assets/stories/
+    - assets/audio/
 
 fonts:
     - family: Amiri

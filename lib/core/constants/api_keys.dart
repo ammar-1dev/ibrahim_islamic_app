@@ -1,11 +1,9 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppApiKeys {
-  // مفتاح جوجل (للباقة المدفوعة أو الدول المدعومة)
-  static const String geminiApiKey = '';
+  static String get geminiApiKey => dotenv.env['GEMINI_API_KEY'] ?? '';
 
-  // 🟢 ضع مفتاح OpenAI API الخاص بك هنا إن أردت استخدام OpenAI مباشرة.
-  static const String openAiApiKey = '';
+  static String get openAiApiKey => dotenv.env['OPENAI_API_KEY'] ?? '';
 
-  // 🟢 ضع مفتاح OpenRouter الجديد الخاص بك هنا 🟢
-  // هذا المفتاح سيتيح لك استخدام نماذج جوجل وغيرها مجاناً بدون قيود الدول!
-  static const String openRouterApiKey = '';
+  static String get openRouterApiKey => dotenv.env['OPENROUTER_API_KEY'] ?? '';
 }

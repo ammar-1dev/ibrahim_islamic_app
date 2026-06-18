@@ -3088,6 +3088,18 @@ abstract class AppLocalizations {
   /// **'Maher Al-Mu\'aiqly'**
   String get reciterMaher;
 
+  /// No description provided for @reciterDosari.
+  ///
+  /// In en, this message translates to:
+  /// **'Yasser Al-Dosari'**
+  String get reciterDosari;
+
+  /// No description provided for @reciterLuhaidan.
+  ///
+  /// In en, this message translates to:
+  /// **'Muhammad Al-Luhaidan'**
+  String get reciterLuhaidan;
+
   /// No description provided for @notifPrayerTimes.
   ///
   /// In en, this message translates to:

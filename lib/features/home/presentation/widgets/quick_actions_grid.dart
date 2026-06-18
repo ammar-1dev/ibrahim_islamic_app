@@ -11,9 +11,18 @@ class QuickActionsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final actions = <_QuickAction>[
+      // ── القرآن وعلومه ──
       _QuickAction(icon: Icons.menu_book, label: l.quickMushaf, route: '/mushaf', color: const Color(0xFF4CAF50)),
+      _QuickAction(icon: Icons.headphones, label: l.quickQuranAudio, route: '/surah-audio', color: const Color(0xFF4CAF50)),
+      _QuickAction(icon: Icons.palette, label: l.quickTajweed, route: '/tajweed-reader', color: const Color(0xFFE91E63)),
+      _QuickAction(icon: Icons.healing, label: l.quickRuqyah, route: '/ruqyah', color: const Color(0xFF795548)),
+      _QuickAction(icon: Icons.search, label: l.quickQuranSearch, route: '/quran-search', color: const Color(0xFF2196F3)),
+      _QuickAction(icon: Icons.bookmark, label: l.quickBookmarks, route: '/bookmarks', color: const Color(0xFF00BCD4)),
+      _QuickAction(icon: Icons.auto_stories, label: l.quickAsbabNuzul, route: '/asbab-book', color: const Color(0xFFFF9800)),
+      _QuickAction(icon: Icons.fingerprint, label: l.quickNamesOfAllah, route: '/names', color: const Color(0xFF009688)),
+      // ── الحديث ──
       _QuickAction(icon: Icons.history_edu, label: l.quickHadith, route: '/hadith', color: const Color(0xFFFF9800)),
-      _QuickAction(icon: Icons.history_edu, label: l.quickStories, route: '/stories', color: const Color(0xFFE53935)),
+      // ── الصلاة والعبادات ──
       _QuickAction(icon: Icons.access_time, label: l.quickPrayerTimes, route: '/prayer-times', color: const Color(0xFF2196F3)),
       _QuickAction(icon: Icons.explore, label: l.quickQibla, route: '/qibla', color: const Color(0xFF4CAF50)),
       _QuickAction(icon: Icons.mosque, label: l.quickMosqueMap, route: '/mosque-map', color: const Color(0xFF009688)),
@@ -21,20 +30,17 @@ class QuickActionsGrid extends StatelessWidget {
       _QuickAction(icon: Icons.nightlight_round, label: l.quickMorningAzkar, route: '/morning-adhkar', color: const Color(0xFFFF5722)),
       _QuickAction(icon: Icons.wb_sunny, label: l.quickEveningAzkar, route: '/evening-adhkar', color: const Color(0xFFFF9800)),
       _QuickAction(icon: Icons.bookmark_border, label: l.quickMiscAzkar, route: '/occasions-adhkar', color: const Color(0xFF9C27B0)),
-      _QuickAction(icon: Icons.headphones, label: l.quickQuranAudio, route: '/surah-audio', color: const Color(0xFF4CAF50)),
-      _QuickAction(icon: Icons.search, label: l.quickQuranSearch, route: '/quran-search', color: const Color(0xFF2196F3)),
-      _QuickAction(icon: Icons.bookmark, label: l.quickBookmarks, route: '/bookmarks', color: const Color(0xFF00BCD4)),
-      _QuickAction(icon: Icons.library_books, label: l.quickLibrary, route: '/books', color: const Color(0xFFE91E63)),
+      // ── السيرة والتاريخ ──
+      _QuickAction(icon: Icons.history_edu, label: l.quickStories, route: '/stories', color: const Color(0xFFE53935)),
       _QuickAction(icon: Icons.timeline, label: l.quickSeerah, route: '/seerah', color: const Color(0xFF2196F3)),
-      _QuickAction(icon: Icons.mosque, label: l.quickFiqh, route: '/fiqh', color: const Color(0xFF795548)),
-      _QuickAction(icon: Icons.track_changes, label: l.quickJourney, route: '/journey', color: const Color(0xFFFFC107)),
       _QuickAction(icon: Icons.people, label: l.quickCompanions, route: '/companions', color: const Color(0xFF3F51B5)),
-      _QuickAction(icon: Icons.palette, label: l.quickTajweed, route: '/tajweed-reader', color: const Color(0xFFE91E63)),
+      // ── الفقه والمواعظ ──
+      _QuickAction(icon: Icons.mosque, label: l.quickFiqh, route: '/fiqh', color: const Color(0xFF795548)),
+      _QuickAction(icon: Icons.library_books, label: l.quickLibrary, route: '/books', color: const Color(0xFFE91E63)),
+      _QuickAction(icon: Icons.track_changes, label: l.quickJourney, route: '/journey', color: const Color(0xFFFFC107)),
+      // ── المجتمع ──
       _QuickAction(icon: Icons.female, label: l.quickWomensSection, route: '/womens-section', color: const Color(0xFFEC407A)),
-      _QuickAction(icon: Icons.healing, label: l.quickRuqyah, route: '/ruqyah', color: const Color(0xFF795548)),
       _QuickAction(icon: Icons.people_outline, label: l.quickSocial, route: '/social', color: const Color(0xFF00BCD4)),
-      _QuickAction(icon: Icons.fingerprint, label: l.quickNamesOfAllah, route: '/names', color: const Color(0xFF009688)),
-      _QuickAction(icon: Icons.auto_stories, label: l.quickAsbabNuzul, route: '/asbab-book', color: const Color(0xFFFF9800)),
     ];
 
     return Column(
